@@ -1345,22 +1345,6 @@ async function startPaypalCheckout() {
 
   const data = await response.json();
 
-  // ⭐ Create a big visible error box at the TOP of the page
-  const debugBox = document.createElement("div");
-  debugBox.style.position = "fixed";
-  debugBox.style.top = "0";
-  debugBox.style.left = "0";
-  debugBox.style.right = "0";
-  debugBox.style.zIndex = "99999";
-  debugBox.style.background = "#ffdddd";
-  debugBox.style.color = "#000";
-  debugBox.style.padding = "20px";
-  debugBox.style.borderBottom = "2px solid #cc0000";
-  debugBox.style.fontFamily = "monospace";
-  debugBox.style.whiteSpace = "pre-wrap";
-  debugBox.textContent = "PayPal response:\n\n" + JSON.stringify(data, null, 2);
-  document.body.prepend(debugBox);
-
   if (data.url) {
     window.location = data.url;
   } else {
