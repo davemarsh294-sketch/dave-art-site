@@ -1,7 +1,5 @@
 // netlify/functions/create-paypal-order.js
 
-const fetch = require("node-fetch");
-
 exports.handler = async (event, context) => {
 
   // Only allow POST requests
@@ -45,6 +43,45 @@ exports.handler = async (event, context) => {
 
     // STEP 2 — Create PayPal order
     const orderRes = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "GBP",
+              value: total.toFixed(2)
+            }
+          }
+        ],
+        application_context: {
+          return_url: "https://davemarshartist.uk/success",
+          cancel_url: "https://davemarshartist.uk/cancel"
+        }
+      })
+    });
+
+    const orderData = await orderRes.json();
+
+    // Find the approval link PayPal returns
+    const approval = orderData.links.find(link => link.rel === "approve");
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ url: approval.href })
+    };
+
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
+};    const orderRes = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
