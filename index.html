@@ -1333,9 +1333,15 @@ async function startCheckout() {
 async function startPaypalCheckout() {
   const total = cartTotal;
 
-  // Build a clear description from the cart
+  // ⭐ Build a clear description from the cart
+  // Example output:
+  // "Sunset Over Kinver – A3, Winter Trees – A4"
   const description = cartItems
-    .map(item => `${item.title}${item.size ? " – " + item.size : ""}`)
+    .map(item => {
+      const title = item.title || "Artwork";
+      const size = item.size ? ` – ${item.size}` : "";
+      return `${title}${size}`;
+    })
     .join(", ");
 
   const response = await fetch('/.netlify/functions/create-paypal-order', {
@@ -1350,7 +1356,7 @@ async function startPaypalCheckout() {
   const data = await response.json();
 
   if (data.url) {
-    window.location = data.url;
+    window.location = data.url;   // ⭐ Redirect straight to PayPal
   } else {
     console.error("PayPal error:", data);
   }
