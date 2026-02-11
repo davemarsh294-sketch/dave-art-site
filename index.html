@@ -1330,13 +1330,13 @@ async function startCheckout() {
 /* --------------------------------------------------
    PAYPAL CHECKOUT
 -------------------------------------------------- */
-console.log("PayPal checkout started");
-  async function startPaypalCheckout() {
-  const total = cartTotal;
+async function startPaypalCheckout() {
+  console.log("PayPal checkout started");
 
-  // ⭐ Build a clear description from the cart
-  // Example output:
-  // "Sunset Over Kinver – A3, Winter Trees – A4"
+  // ⭐ Load cart from localStorage (your site uses this)
+  const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // ⭐ Build description from cart items
   const description = cartItems
     .map(item => {
       const title = item.title || "Artwork";
@@ -1344,6 +1344,9 @@ console.log("PayPal checkout started");
       return `${title}${size}`;
     })
     .join(", ");
+
+  // ⭐ Calculate total
+  const total = cartTotal; // your existing global total
 
   const response = await fetch('/.netlify/functions/create-paypal-order', {
     method: 'POST',
@@ -1357,7 +1360,7 @@ console.log("PayPal checkout started");
   const data = await response.json();
 
   if (data.url) {
-    window.location = data.url;   // ⭐ Redirect straight to PayPal
+    window.location = data.url; // redirect to PayPal
   } else {
     console.error("PayPal error:", data);
   }
