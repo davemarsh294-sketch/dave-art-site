@@ -1332,7 +1332,11 @@ async function startCheckout() {
 -------------------------------------------------- */
 async function startPaypalCheckout() {
   const total = cartTotal;
-  const description = "Artwork purchase";
+
+  // Build a clear description from the cart
+  const description = cartItems
+    .map(item => `${item.title}${item.size ? " – " + item.size : ""}`)
+    .join(", ");
 
   const response = await fetch('/.netlify/functions/create-paypal-order', {
     method: 'POST',
