@@ -1345,11 +1345,15 @@ async function startPaypalCheckout() {
 
   const data = await response.json();
 
-  // ⭐ Log full error to console (easy to read)
-  console.log("PayPal response:", data);
-
-  // ⭐ Show a short popup so you know something happened
-  alert("PayPal returned a response. Check the console for details.");
+  // ⭐ Write the PayPal response directly onto the page
+  const debugBox = document.createElement("pre");
+  debugBox.style.whiteSpace = "pre-wrap";
+  debugBox.style.background = "#eee";
+  debugBox.style.padding = "12px";
+  debugBox.style.margin = "12px";
+  debugBox.style.border = "1px solid #ccc";
+  debugBox.textContent = "PayPal response:\n\n" + JSON.stringify(data, null, 2);
+  document.body.appendChild(debugBox);
 
   if (data.url) {
     window.location = data.url;
@@ -1357,8 +1361,6 @@ async function startPaypalCheckout() {
     console.error("PayPal error:", data);
   }
 }
-
-
 /* --------------------------------------------------
    VIGNETTE
 -------------------------------------------------- */
