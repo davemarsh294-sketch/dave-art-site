@@ -1,35 +1,19 @@
 // netlify/functions/create-paypal-order.js
 
-exports.handler = async (event, context) => {
-
-  // Only allow POST requests
-  if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: "Method Not Allowed" })
-    };
-  }
-
+export async function handler(event, context) {
   try {
-    // Parse incoming data from your site
-    const body = JSON.parse(event.body);
-    const items = body.items || [];
-    const region = body.region || "UK";
+    const { amount, description } = JSON.parse(event.body);
 
-    // Calculate total price from cart items
-    const total = items.reduce((sum, item) => {
-      return sum + item.price * item.quantity;
-    }, 0);
+    const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+    const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
 
-    // Load PayPal credentials from Netlify environment variables
-    const clientId = process.env.PAYPAL_CLIENT_ID;
-    const secret = process.env.PAYPAL_SECRET;
+    // LIVE PayPal API endpoint
+    const PAYPAL_API = "https://api-m.paypal.com";
 
-    // Encode credentials for OAuth
-    const auth = Buffer.from(`${clientId}:${secret}`).toString("base64");
+    // 1. Get OAuth token
+    const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET}`).toString("base64");
 
-    // STEP 1 — Get OAuth access token
-    const tokenRes = await fetch("https://api-m.paypal.com/v1/oauth2/token", {
+    const tokenResponse = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
       method: "POST",
       headers: {
         "Authorization": `Basic ${auth}`,
@@ -38,15 +22,21 @@ exports.handler = async (event, context) => {
       body: "grant_type=client_credentials"
     });
 
-    const tokenData = await tokenRes.json();
-    const accessToken = tokenData.access_token;
+    const tokenData = await tokenResponse.json();
 
-    // STEP 2 — Create PayPal order
-    const orderRes = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
+    if (!tokenData.access_token) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Failed to get PayPal access token", details: tokenData })
+      };
+    }
+
+    // 2. Create order
+    const orderResponse = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
+        "Authorization": `Bearer ${tokenData.access_token}`
       },
       body: JSON.stringify({
         intent: "CAPTURE",
@@ -54,70 +44,35 @@ exports.handler = async (event, context) => {
           {
             amount: {
               currency_code: "GBP",
-              value: total.toFixed(2)
-            }
+              value: amount
+            },
+            description: description
           }
-        ],
-        application_context: {
-          return_url: "https://davemarshartist.uk/success",
-          cancel_url: "https://davemarshartist.uk/cancel"
-        }
+        ]
       })
     });
 
-    const orderData = await orderRes.json();
+    const orderData = await orderResponse.json();
 
-    // Find the approval link PayPal returns
-    const approval = orderData.links.find(link => link.rel === "approve");
+    // 3. Extract approval link
+    const approval = orderData.links?.find(link => link.rel === "approve");
+
+    if (!approval) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "No approval link returned", details: orderData })
+      };
+    }
 
     return {
       statusCode: 200,
       body: JSON.stringify({ url: approval.href })
     };
 
-  } catch (error) {
+  } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: "Server error", details: err.message })
     };
   }
-};    const orderRes = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({
-        intent: "CAPTURE",
-        purchase_units: [
-          {
-            amount: {
-              currency_code: "GBP",
-              value: total.toFixed(2)
-            }
-          }
-        ],
-        application_context: {
-          return_url: "https://davemarshartist.uk/success",
-          cancel_url: "https://davemarshartist.uk/cancel"
-        }
-      })
-    });
-
-    const orderData = await orderRes.json();
-
-    // Find the approval link PayPal returns
-    const approval = orderData.links.find(link => link.rel === "approve");
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ url: approval.href })
-    };
-
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
-  }
-};
+}
