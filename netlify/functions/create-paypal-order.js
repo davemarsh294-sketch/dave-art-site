@@ -62,10 +62,10 @@ exports.handler = async (event, context) => {
           }
         ],
         application_context: {
-  shipping_preference: "GET_FROM_FILE",
-  return_url: "https://dave-art-site.netlify.app/thank-you",
-  cancel_url: "https://dave-art-site.netlify.app/cancelled"
-}
+          shipping_preference: "GET_FROM_FILE", // ⭐ PayPal collects shipping address
+          return_url: "https://dave-art-site.netlify.app/thank-you",   // ⭐ After payment
+          cancel_url: "https://dave-art-site.netlify.app/cancelled"    // ⭐ If cancelled
+        }
       })
     });
 
