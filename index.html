@@ -1156,7 +1156,31 @@ function changeQty(id, delta) {
   saveCart();
   renderCart();
 }
+/* --------------------------------------------------
+   CLEAR CART AFTER PAYPAL SUCCESS
+-------------------------------------------------- */
+if (localStorage.getItem("cartCleared") === "true") {
 
+  // Remove cart data
+  localStorage.removeItem("cart");
+  localStorage.removeItem("cartCleared");
+
+  // Reset UI elements if they exist
+  const emptyMessage = document.getElementById("empty-cart-message");
+  const cartItems = document.getElementById("cart-items");
+  const cartSummary = document.getElementById("cartSummary");
+  const cartCount = document.getElementById("cart-count");
+
+  if (emptyMessage) emptyMessage.style.display = "block";
+  if (cartItems) cartItems.innerHTML = "";
+  if (cartSummary) cartSummary.style.display = "none";
+  if (cartCount) cartCount.textContent = "0";
+
+  // Ensure the in‑memory cart array is empty
+  if (typeof cart !== "undefined") {
+    cart.length = 0;
+  }
+}
 /* --------------------------------------------------
    RENDER CART
 -------------------------------------------------- */
