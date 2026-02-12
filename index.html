@@ -1128,6 +1128,72 @@ body.cart-open {
   </div>
 </header>
 
+<!-- CART DRAWER -->
+<div id="cartDrawer" class="cart-drawer">
+
+  <div class="cart-header">
+    <span>Shopping Cart</span>
+    <button onclick="closeCart()" class="cart-close">×</button>
+  </div>
+
+  <div class="cart-content">
+    <div id="empty-cart-message" class="empty-cart-message">
+      Your cart is empty
+    </div>
+
+    <div id="cart-items"></div>
+
+    <div id="cartSummary" class="cart-summary" style="display:none;">
+
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">£0.00</span>
+      </div>
+
+      <div class="cart-summary-row">
+        <span>Delivery</span>
+        <span id="cartDelivery">£0.00</span>
+      </div>
+
+      <div class="cart-summary-row">
+        <span>Certificates</span>
+        <span id="cartCertificates">£0.00</span>
+      </div>
+
+      <div class="cart-summary-row">
+        <strong>Total</strong>
+        <strong id="cartTotal">£0.00</strong>
+      </div>
+
+      <div class="cart-region">
+        <label>Delivery Region</label>
+        <select id="regionSelect" onchange="updateCartTotals()">
+          <option value="uk">United Kingdom</option>
+          <option value="eu">Europe</option>
+          <option value="world">Rest of World</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="cart-footer">
+    <button onclick="startCheckout()"
+      style="width:100%; padding:12px; background:black; color:white; border:none; margin-bottom:12px;
+             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
+      Checkout with Card, GooglePay or ApplePay
+    </button>
+
+    <button onclick="startPaypalCheckout()"
+      style="width:100%; padding:12px; background:#ffc439; color:#111; border:none;
+             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
+      Pay with PayPal
+    </button>
+  </div>
+
+</div>
+
+  
 <main>
 
   <!-- HERO -->
@@ -1204,70 +1270,7 @@ body.cart-open {
     <div id="newsList"></div>
   </section>
 
-  <!-- CART DRAWER -->
-<div id="cartDrawer" class="cart-drawer">
-
-  <div class="cart-header">
-    <span>Shopping Cart</span>
-    <button onclick="closeCart()" class="cart-close">×</button>
-  </div>
-
-  <div class="cart-content">
-    <div id="empty-cart-message" class="empty-cart-message">
-      Your cart is empty
-    </div>
-
-    <div id="cart-items"></div>
-
-    <div id="cartSummary" class="cart-summary" style="display:none;">
-
-      <div class="cart-summary-row">
-        <span>Subtotal</span>
-        <span id="cartSubtotal">£0.00</span>
-      </div>
-
-      <div class="cart-summary-row">
-        <span>Delivery</span>
-        <span id="cartDelivery">£0.00</span>
-      </div>
-
-      <div class="cart-summary-row">
-        <span>Certificates</span>
-        <span id="cartCertificates">£0.00</span>
-      </div>
-
-      <div class="cart-summary-row">
-        <strong>Total</strong>
-        <strong id="cartTotal">£0.00</strong>
-      </div>
-
-      <div class="cart-region">
-        <label>Delivery Region</label>
-        <select id="regionSelect" onchange="updateCartTotals()">
-          <option value="uk">United Kingdom</option>
-          <option value="eu">Europe</option>
-          <option value="world">Rest of World</option>
-        </select>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="cart-footer">
-    <button onclick="startCheckout()"
-      style="width:100%; padding:12px; background:black; color:white; border:none; margin-bottom:12px;
-             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
-      Checkout with Card, GooglePay or ApplePay
-    </button>
-
-    <button onclick="startPaypalCheckout()"
-      style="width:100%; padding:12px; background:#ffc439; color:#111; border:none;
-             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
-      Pay with PayPal
-    </button>
-  </div>
-
-</div>
+  
   <!-- IMPORTANT INFORMATION -->
   <section class="info-section">
     <div class="horizontal_line"></div>
