@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dave Marsh : Artist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  <!-- SEO -->
+  <meta name="description" content="Dave Marsh – Contemporary artist based in the UK. Original artwork, fine art prints, and updates on new exhibitions and releases.">
+  <meta name="keywords" content="Dave Marsh, artist, contemporary art, fine art, prints, paintings, UK artist">
+  <meta name="author" content="Dave Marsh">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Dave Marsh – Artist">
+  <meta property="og:description" content="Original artwork and fine art prints by UK artist Dave Marsh.">
+  <meta property="og:image" content="https://davemarshartist.uk/images/opening.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <!-- PayPal -->
+ 
+
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --text: #111;
+      --muted: #666;
+      --line: #d0d0d0;
+      --accent-soft: #f0f0ec;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      padding-top: 100px;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      z-index: 100;
+    }
+
+    .nav {
+      padding: 18px 20px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.24em;
+      font-weight: 400;
+      opacity: 0.9;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-links button {
+      border: none;
+      background: none;
+      padding: 0;
+      font: inherit;
+      cursor: pointer;
+      color: var(--text);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 12px;
+      opacity: 0.75;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-links button:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    /* CART ICON */
+    .cart-icon-button {
+      position: relative;
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-icon-button img {
+      width: 18px;
+      height: 18px;
+      opacity: 0.75;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .cart-icon-button:hover img {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    .cart-count-badge {
+      position: absolute;
+      top: 50%;
+      right: -32px;
+      transform: translateY(-50%);
+      background: var(--text);
+      color: #fff;
+      font-size: 11px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 26px;
+      position: relative;
+      z-index: 1; /* prevents overlay blocking hover */
+    }
+
+    /* SHOP ART CARD */
+    .art-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 14px;
+      box-sizing: border-box;
+    }
+
+    .art-meta { margin-top: 10px; }
+    .art-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .art-specs { font-size: 12px; color: var(--muted); }
+
+    /* NEWS */
+    .news-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 120px;
+    }
+
+    .news-thumb {
+      width: 85px;
+      object-fit: contain;
+      background: var(--bg);
+    }
+
+    .news-content { flex: 1; }
+
+    .news-date {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .news-title {
+      font-size: 12px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .news-body {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* NEWS TEASER */
+    .news-teaser {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 6px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .news-teaser-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .news-teaser-thumb {
+      width: 90px;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      background: var(--accent-soft);
+    }
+
+    .news-teaser-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .news-teaser-body {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .news-teaser-readmore {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 12px;
+      text-decoration: underline;
+      color: #444;
+    }
+
+    /* CART DRAWER */
+    #
+    #cartDrawer.open { right: 0; }
+
+    .cart-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .cart-close {
+      border: none;
+      background: none;
+      font-size: 22px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .cart-close:hover { opacity: 1; }
+
+    #cart-items {
+      padding: 14px 18px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .empty-cart-message {
+      padding: 14px 18px;
+      font-size: 0.9rem;
+      color: #555;
+      display: none;
+    }
+
+    .cart-item {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0 14px;
+    }
+
+    .cart-item-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .cart-item-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .cart-item-certificate {
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .cert-text-small {
+      font-size: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .qty-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-controls button {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      background: #f5f5f5;
+      cursor: pointer;
+    }
+
+    .cart-remove-btn {
+      border: none;
+      background: none;
+      font-size: 12px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .cart-summary {
+      padding: 14px 18px 18px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .cart-summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .cart-region {
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .cart-region select {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 20px 0;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .footer-icons {
+      display: flex;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .footer-icons img {
+      width: 22px;
+      opacity: 0.75;
+    }
+
+    .footer-icons img:hover { opacity: 1; }
+
+    /* SECTION LAYOUT */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    section {
+      margin-bottom: 20px;
+    }
+
+    .horizontal_line {
+      width: 100%;
+      height: 20px;
+      border-top: 6px solid var(--line);
+    }
+
+    /* VIGNETTE OVERLAY */
+    .vignette-overlay {
+      position: fixed;
+      top: 130px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 130px);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      pointer-events: none; /* prevents blocking hover */
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      box-sizing: border-box;
+      z-index: 9999;
+    }
+
+    .vignette-overlay.show {
+      display: flex;
+      pointer-events: auto;
+    }
+
+    .vignette-content {
+      background: white;
+      max-width: 520px;
+      width: 100%;
+      border-radius: 4px;
+      text-align: left;
+      position: relative;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+      overflow: visible; /* allow close button */
+      padding: 60px 20px 20px 20px;
+      box-sizing: border-box;
+      border: 1px solid #d0d0d0;
+    }
+
+    .vignette-header {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 48px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-right: 16px;
+      background: #fff;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+      z-index: 9999;
+    }
+
+    .vignette-close {
+      font-size: 28px;
+      font-weight: 700;
+      opacity: 0.9;
+      cursor: pointer;
+      padding: 6px 10px;
+      line-height: 1;
+      pointer-events: auto;
+    }
+
+    .vignette-close:hover {
+      opacity: 1;
+    }
+
+    #vignetteImage {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    #vignetteTitle {
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      font-weight: 400;
+      margin: 0 0 12px 0;
+      opacity: 0.85;
+      text-transform: uppercase;
+    }
+
+    #vignetteText {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      line-height: 1.5;
+      opacity: 0.75;
+      max-height: 45vh;
+      overflow-y: auto;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    /* ⭐ GALLERY HOVER — FULL-WIDTH STRIP WITH 14px PADDING */
+    .gallery-item {
+      position: relative;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 14px;
+      box-sizing: border-box;
+      cursor: pointer;
+      overflow: visible;
+      z-index: 2;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      transition: opacity 0.4s ease;
+    }
+
+    .gallery-item:hover img {
+      opacity: 0.65;
+    }
+
+    .gallery-item::after {
+      content: "View details";
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      padding: 12px 16px;
+      background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0));
+      color: #fff;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .gallery-item:hover::after {
+      opacity: 1;
+    }
+
+    /* Mobile: always visible */
+    @media (hover: none) and (pointer: coarse) {
+      .gallery-item::after {
+        opacity: 1 !important;
+      }
+      .gallery-item img {
+        opacity: 0.65 !important;
+      }
+    }
+
+    /* CLEAN BLACK ADD TO CART BUTTONS */
+    .art-actions button {
+      width: 100%;
+      padding: 12px 14px;
+      background: #111;
+      color: #fff;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 12px;
+      cursor: pointer;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .art-actions button:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    .art-actions select {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+    }
+
+
+
+
+/* Scrollable area for items + totals */
+.cart-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  padding-bottom: 140px; /* ensures items never hide behind footer */
+}
+
+/* Footer stays fixed at bottom */
+.cart-footer {
+  padding: 20px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+    
+    /* CART DRAWER */
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;        /* ⭐ REQUIRED */
+  display: flex;        /* ⭐ REQUIRED */
+  flex-direction: column;
+  background: #fff;
+  box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 9999;
+}
+
+.cart-drawer.open {
+  transform: translateX(0);
+}
+
+
+
+
+
+
+.cart-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  padding-bottom: 160px; /* space for footer */
+}
+    
+    body.cart-open {
+  overflow: hidden;
+  height: 100vh;
+}
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="nav">
+    <h1>Dave Marsh : Artist</h1>
+
+    <div class="nav-links">
+      <button onclick="scrollToSection('about')">About</button>
+      <button onclick="scrollToSection('gallery')">Gallery</button>
+      <button onclick="scrollToSection('shop')">Shop</button>
+      <button onclick="scrollToSection('news')">News</button>
+
+      <button class="cart-icon-button" onclick="openCart()" aria-label="Cart">
+        <img src="https://img.icons8.com/ios-glyphs/30/000000/shopping-cart.png" alt="" />
+        <span id="cartCountBadge" class="cart-count-badge">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <p style="font-size:20px; letter-spacing:0.22em; text-align: center; text-transform:uppercase; font-weight:400; margin:0 0 5px; opacity:0.9;">
+    Realism : Surrealism
+  </p>
+
+  <div class="about-image-wrap">
+    <img src="Images/android.jpg" alt="Android" class="hero-image" />
+  </div>
+
+  <p style="font-size:12px;">
+    Latest artwork – Oil paint on canvas board titled "Android"
+  </p>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p style="font-size:20px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      About Artist
+    </p>
+
+    <p>
+      Dave enjoyed art from an early age but was equally drawn to the sciences, which he studied throughout school.
+      At eighteen he had to choose between Fine Art and Architecture at university, ultimately selecting architecture
+      because it combined both disciplines. Now retired from architectural practice, he has returned to art,
+      reconnecting with early interests in photorealism and surrealism. His current work explores realism alongside
+      surreal compositions that place incongruous figures or objects within believable landscapes, creating subtle
+      tension and unexpected narratives.
+    </p>
+
+    <!-- LATEST NEWS TEASER -->
+    <div class="news-teaser">
+      <p style="font-size:20px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+        Latest News
+      </p>
+
+      <div class="news-teaser-row">
+        <img class="news-teaser-thumb" src="" alt="">
+        <div class="news-teaser-text"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="horizontal_line"></div>
+
+    <p style="font-size:20px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      Gallery
+    </p>
+
+    <div id="galleryGrid" class="grid"></div>
+  </section>
+
+  <!-- SHOP -->
+  <section id="shop">
+    <div class="horizontal_line"></div>
+
+    <p style="font-size:20px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      Shop
+    </p>
+
+    <div id="shopGrid" class="grid"></div>
+  </section>
+  
+  <!-- NEWS -->
+  <section id="news">
+    <div class="horizontal_line"></div>
+
+    <p style="font-size:20px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      News
+    </p>
+
+    <div id="newsList"></div>
+  </section>
+
+  <!-- CART DRAWER -->
+<div id="cartDrawer" class="cart-drawer">
+
+  <div class="cart-header">
+    <span>Shopping Cart</span>
+    <button onclick="closeCart()" class="cart-close">×</button>
+  </div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="cart-content">
+
+    <div id="empty-cart-message" class="empty-cart-message">
+      Your cart is empty
+    </div>
+
+    <div id="cart-items"></div>
+
+    <div id="cartSummary" class="cart-summary" style="display:none;">
+
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">£0.00</span>
+      </div>
+
+      <div class="cart-summary-row">
+        <span>Delivery</span>
+        <span id="cartDelivery">£0.00</span>
+      </div>
+
+      <div class="cart-summary-row">
+        <span>Certificates</span>
+        <span id="cartCertificates">£0.00</span>
+      </div>
+
+      <div class="cart-summary-row">
+        <strong>Total</strong>
+        <strong id="cartTotal">£0.00</strong>
+      </div>
+
+      <div class="cart-region">
+        <label>Delivery Region</label>
+        <select id="regionSelect" onchange="updateCartTotals()">
+          <option value="uk">United Kingdom</option>
+          <option value="eu">Europe</option>
+          <option value="world">Rest of World</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FIXED FOOTER WITH PAYMENT BUTTONS -->
+  <div class="cart-footer">
+    <button onclick="startCheckout()"
+      style="width:100%; padding:12px; background:black; color:white; border:none; margin-bottom:12px;
+             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
+      Checkout with Card, GooglePay or ApplePay
+    </button>
+
+    <button onclick="startPaypalCheckout()"
+      style="width:100%; padding:12px; background:#ffc439; color:#111; border:none;
+             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
+      Pay with PayPal
+    </button>
+  </div>
+
+</div>
+  <!-- IMPORTANT INFORMATION -->
+  <section class="info-section">
+    <div class="horizontal_line"></div>
+
+    <p style="font-size:20px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      Important Information
+    </p>
+
+    <p style="font-size:15px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      Printing
+    </p>
+
+    <p>All of our prints are printed on Museum Heritage Archival Cotton Rag Paper using Canon Lucia Lightfast Pigment Inks.</p>
+    <p>The printer used is a Canon giclée printer, ensuring the highest archival quality and colour fidelity.</p>
+
+    <p style="font-size:15px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      Post, Packaging & Insurance
+    </p>
+
+    <p>All our prints are packaged in Standard sturdy mailing tubes designed for unframed prints, fully protective for shipping worldwide and are delivered using the Royal Mail Tracked & Signed service.</p>
+
+    <p>For UK deliveries Royal Mail aims to deliver parcels within 24 hours. For international parcel services the Royal Mail has delivery aims of 3–5 working days to Europe and 6–7 working days for the rest of the world. A mandatory customs declaration (CN22/CN23) is required for all items sent to destinations outside the UK. Items with a value over £135 may be subject to customs duties.</p>
+
+    <p>For all deliveries insurance up to £500 is included in the delivery price.</p>
+
+    <p style="font-size:15px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      Fine Art Trade Guild – ArtSure Print Registration
+    </p>
+
+    <p>As an ArtSure Approved Printer, we meet the Fine Art Trade Guild’s standards for inks, papers, and printing processes. All of our limited edition prints are registered with the Guild, who will provide a certificate and listing in the ArtSure database. This adds validation, authenticity, and archival assurance, giving you confidence that our prints are professionally produced to recognised standards.</p>
+
+    <p>If you require an ArtSure Limited Edition Registration Certificate please tick the check box in the shopping cart. There is a charge of £30 for providing a certificate which will be delivered with your print.</p>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="info-section contact-section">
+    <div class="horizontal_line"></div>
+
+    <p style="font-size:20px; letter-spacing:0.22em; font-weight:400; margin:0 0 22px; opacity:0.9;">
+      Contact
+    </p>
+
+    <p style="font-size:12px;">Address: 17, High Street, Kinver, Staffordshire, DY7 6HG, UK</p>
+    <p style="font-size:12px;">Phone: 07774 694223</p>
+
+    <div class="footer-icons">
+      <a href="https://instagram.com/masha_ibeanartist" target="_blank" rel="noreferrer">
+        <img src="https://cdn.simpleicons.org/instagram" alt="Instagram" />
+      </a>
+
+      <a href="https://www.facebook.com/share/1793RHEApM/" target="_blank" rel="noreferrer">
+        <img src="https://cdn.simpleicons.org/facebook" alt="Facebook" />
+      </a>
+
+      <a href="mailto:davemarsh294@gmail.com">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </div>
+  </section>
+
+<!-- SUCCESS PAGE -->
+<section id="success" style="display:none; text-align:center; padding:60px 20px;">
+  <div class="horizontal_line"></div>
+  <h2 style="letter-spacing:0.22em; font-weight:400; opacity:0.9; margin-bottom:20px;">
+    Payment Successful
+  </h2>
+  <p style="font-size:14px; opacity:0.75; max-width:420px; margin:0 auto;">
+    Thank you for your purchase. Your order has been received and is now being processed.
+  </p>
+</section>
+
+<!-- CANCEL PAGE -->
+<section id="cancel" style="display:none; text-align:center; padding:60px 20px;">
+  <div class="horizontal_line"></div>
+  <h2 style="letter-spacing:0.22em; font-weight:400; opacity:0.9; margin-bottom:20px;">
+    Payment Cancelled
+  </h2>
+  <p style="font-size:14px; opacity:0.75; max-width:420px; margin:0 auto;">
+    Your payment was cancelled. No money has been taken.  
+    You can return to the shop and try again at any time.
+  </p>
+</section>
+
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="horizontal_line"></div>
+    <div>© Dave Marsh</div>
+  </div>
+</footer>
+
+<!-- VIGNETTE OVERLAY -->
+<div id="artVignette" class="vignette-overlay">
+  <div class="vignette-content">
+
+    <div class="vignette-header">
+      <span class="vignette-close" onclick="closeVignette()">×</span>
+    </div>
+
+    <img id="vignetteImage" alt="Artwork">
+
+    <h2 id="vignetteTitle"></h2>
+
+    <div id="vignetteText"></div>
+
+  </div>
+</div>
+
+<script>
+/* --------------------------------------------------
+   GLOBAL STATE
+-------------------------------------------------- */
+let galleryItems = [];
+let shopItems = [];
+let newsItems = [];
+let cart = JSON.parse(localStorage.getItem("dm_cart") || "[]");
+let cartTotal = 0;
+
+const DELIVERY_RATES = {
+  uk: 15,
+  eu: 20,
+  world: 25
+};
+
+/* --------------------------------------------------
+   LOAD JSON
+-------------------------------------------------- */
+function loadJSON(url) {
+  return fetch(url).then(res => {
+    if (!res.ok) throw new Error("Failed to load " + url);
+    return res.json();
+  });
+}
+
+/* --------------------------------------------------
+   INITIALISE SITE
+-------------------------------------------------- */
+function init() {
+  loadJSON("gallery.json")
+    .then(data => { galleryItems = data; renderGallery(); })
+    .catch(err => console.error("Gallery load error:", err));
+
+  loadJSON("shop.json")
+    .then(data => { shopItems = data; renderShop(); })
+    .catch(err => console.error("Shop load error:", err));
+
+  loadJSON("news.json")
+    .then(data => {
+      newsItems = data;
+      renderNews();
+      renderNewsTeaser();
+    })
+    .catch(err => console.error("News load error:", err));
+
+  renderCart();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+/* --------------------------------------------------
+   SCROLL TO SECTION
+-------------------------------------------------- */
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const offset = 130;
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+
+  window.scrollTo({ top, behavior: "smooth" });
+}
+
+/* --------------------------------------------------
+   GALLERY
+-------------------------------------------------- */
+function renderGallery() {
+  const grid = document.getElementById("galleryGrid");
+  grid.innerHTML = "";
+
+  galleryItems.forEach(item => {
+    const card = document.createElement("article");
+    card.className = "gallery-item";
+
+    const img = document.createElement("img");
+    img.src = item.image;
+    img.alt = item.alt || item.title;
+    card.appendChild(img);
+
+    const meta = document.createElement("div");
+    meta.className = "art-meta";
+
+    const title = document.createElement("div");
+    title.className = "art-title";
+    title.textContent = item.title;
+    meta.appendChild(title);
+
+    const specs = document.createElement("div");
+    specs.className = "art-specs";
+    specs.textContent = item.specs;
+    meta.appendChild(specs);
+
+    const dims = document.createElement("div");
+    dims.className = "art-specs";
+    dims.textContent = item.dimensions;
+    meta.appendChild(dims);
+
+    card.appendChild(meta);
+
+    card.onclick = () => openVignette(
+      item.title,
+      item.specs,
+      item.dimensions,
+      item.image,
+      item.text || ""
+    );
+
+    grid.appendChild(card);
+  });
+}
+
+/* --------------------------------------------------
+   SHOP
+-------------------------------------------------- */
+function renderShop() {
+  const grid = document.getElementById("shopGrid");
+  grid.innerHTML = "";
+
+  shopItems.forEach(item => {
+    const card = document.createElement("article");
+    card.className = "art-card";
+
+    const img = document.createElement("img");
+    img.src = item.image;
+    img.alt = item.alt || item.title;
+    card.appendChild(img);
+
+    const meta = document.createElement("div");
+    meta.className = "art-meta";
+
+    const title = document.createElement("div");
+    title.className = "art-title";
+    title.textContent = item.title;
+    meta.appendChild(title);
+
+    const specs = document.createElement("div");
+    specs.className = "art-specs";
+    specs.textContent = item.specs;
+    meta.appendChild(specs);
+
+    if (item.edition) {
+      const ed = document.createElement("div");
+      ed.className = "art-specs";
+      ed.textContent = item.edition;
+      meta.appendChild(ed);
+    }
+
+    card.appendChild(meta);
+
+    const actions = document.createElement("div");
+    actions.className = "art-actions";
+
+    const sizeSelect = document.createElement("select");
+    item.sizes.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.label;
+      opt.textContent = s.label;
+      sizeSelect.appendChild(opt);
+    });
+
+    const priceLine = document.createElement("div");
+    priceLine.className = "price-line";
+    priceLine.textContent = "£" + item.sizes[0].price;
+
+    sizeSelect.onchange = () => {
+      const selected = item.sizes.find(s => s.label === sizeSelect.value);
+      priceLine.textContent = "£" + selected.price;
+    };
+
+    const addBtn = document.createElement("button");
+    addBtn.textContent = "Add to Cart";
+    addBtn.onclick = () => {
+      const selected = item.sizes.find(s => s.label === sizeSelect.value);
+      addToCart({
+        id: item.id + "-" + selected.label,
+        baseId: item.id,
+        title: item.title,
+        size: selected.label,
+        price: selected.price,
+        image: item.image,
+        specs: item.specs,
+        edition: item.edition,
+        qty: 1,
+        certificate: false
+      });
+    };
+
+    actions.appendChild(sizeSelect);
+    actions.appendChild(priceLine);
+    actions.appendChild(addBtn);
+
+    card.appendChild(actions);
+    grid.appendChild(card);
+  });
+}
+
+/* --------------------------------------------------
+   NEWS
+-------------------------------------------------- */
+function renderNews() {
+  const list = document.getElementById("newsList");
+  list.innerHTML = "";
+
+  newsItems.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "news-item";
+    row.id = "news-" + item.id;
+
+    const thumb = document.createElement("img");
+    thumb.className = "news-thumb";
+    thumb.src = item.image || "";
+    thumb.alt = item.title;
+    row.appendChild(thumb);
+
+    const content = document.createElement("div");
+    content.className = "news-content";
+
+    const date = document.createElement("div");
+    date.className = "news-date";
+    date.textContent = new Date(item.date).toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+    content.appendChild(date);
+
+    const title = document.createElement("div");
+    title.className = "news-title";
+    title.textContent = item.title;
+    content.appendChild(title);
+
+    const body = document.createElement("div");
+    body.className = "news-body";
+    body.textContent = item.content;
+    content.appendChild(body);
+
+    row.appendChild(content);
+    list.appendChild(row);
+  });
+}
+
+/* --------------------------------------------------
+   NEWS TEASER — NEWEST ITEM FIRST
+-------------------------------------------------- */
+function renderNewsTeaser() {
+  if (!newsItems.length) return;
+
+  const latest = newsItems[0];
+
+  const thumb = document.querySelector(".news-teaser-thumb");
+  const text = document.querySelector(".news-teaser-text");
+
+  if (!thumb || !text) return;
+
+  thumb.src = latest.image || "";
+  thumb.alt = latest.title;
+
+  const maxLength = 60;
+  const truncated =
+    latest.content.length > maxLength
+      ? latest.content.substring(0, maxLength).trim() + "…"
+      : latest.content;
+
+  text.innerHTML = `
+    <div class="news-teaser-title">${latest.title}</div>
+    <div class="news-teaser-body">${truncated}</div>
+    <a href="#news-${latest.id}" class="news-teaser-readmore">Read more</a>
+  `;
+}
+
+/* --------------------------------------------------
+   CART LOGIC
+-------------------------------------------------- */
+function saveCart() {
+  localStorage.setItem("dm_cart", JSON.stringify(cart));
+}
+
+function openCart() {
+  document.getElementById("cartDrawer").classList.add("open");
+}
+
+function closeCart() {
+  document.getElementById("cartDrawer").classList.remove("open");
+}
+
+function addToCart(item) {
+  const existing = cart.find(c => c.id === item.id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push(item);
+  }
+  saveCart();
+  renderCart();
+  openCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  saveCart();
+  renderCart();
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+
+  item.qty += delta;
+
+  if (item.qty <= 0) {
+    cart = cart.filter(c => c.id !== id);
+  }
+
+  saveCart();
+  renderCart();
+}
+/* --------------------------------------------------
+   CLEAR CART AFTER PAYPAL SUCCESS
+-------------------------------------------------- */
+if (localStorage.getItem("cartCleared") === "true") {
+
+  // Remove cart data
+  localStorage.removeItem("cart");
+  localStorage.removeItem("cartCleared");
+
+  // Reset UI elements if they exist
+  const emptyMessage = document.getElementById("empty-cart-message");
+  const cartItems = document.getElementById("cart-items");
+  const cartSummary = document.getElementById("cartSummary");
+  const cartCount = document.getElementById("cart-count");
+
+  if (emptyMessage) emptyMessage.style.display = "block";
+  if (cartItems) cartItems.innerHTML = "";
+  if (cartSummary) cartSummary.style.display = "none";
+  if (cartCount) cartCount.textContent = "0";
+
+  // Ensure the in‑memory cart array is empty
+  if (typeof cart !== "undefined") {
+    cart.length = 0;
+  }
+}
+/* --------------------------------------------------
+   RENDER CART
+-------------------------------------------------- */
+function renderCart() {
+  const container = document.getElementById("cart-items");
+  const emptyMsg = document.getElementById("empty-cart-message");
+  const summary = document.getElementById("cartSummary");
+
+  container.innerHTML = "";
+
+  if (cart.length === 0) {
+    emptyMsg.style.display = "block";
+    summary.style.display = "none";
+
+    const badge = document.getElementById("cartCountBadge");
+    if (badge) {
+      badge.textContent = "0";
+      badge.style.opacity = "1";
+    }
+
+    updateCartTotals();
+    return;
+  }
+
+  emptyMsg.style.display = "none";
+  summary.style.display = "block";
+
+  cart.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "cart-item";
+
+    const header = document.createElement("div");
+    header.className = "cart-item-header";
+
+    const title = document.createElement("div");
+    title.className = "cart-item-title";
+    title.textContent = `${item.title} (${item.size})`;
+    header.appendChild(title);
+
+    const price = document.createElement("div");
+    price.textContent = "£" + (item.price * item.qty).toFixed(2);
+    header.appendChild(price);
+
+    row.appendChild(header);
+
+    const meta = document.createElement("div");
+    meta.className = "cart-item-meta";
+    meta.textContent = item.specs + (item.edition ? " · " + item.edition : "");
+    row.appendChild(meta);
+
+    const certWrapper = document.createElement("div");
+    certWrapper.className = "cart-item-certificate";
+
+    const certLabelEl = document.createElement("label");
+    certLabelEl.style.display = "flex";
+    certLabelEl.style.alignItems = "center";
+    certLabelEl.style.gap = "8px";
+    certLabelEl.style.cursor = "pointer";
+
+    const certCheckboxEl = document.createElement("input");
+    certCheckboxEl.type = "checkbox";
+    certCheckboxEl.checked = item.certificate === true;
+
+    certCheckboxEl.onchange = () => {
+      item.certificate = certCheckboxEl.checked;
+      saveCart();
+      updateCartTotals();
+    };
+
+    const certText = document.createElement("span");
+    certText.className = "cert-text-small";
+    certText.textContent = "Add ArtSure Limited Edition Registration Certificate (£30)";
+
+    certLabelEl.appendChild(certCheckboxEl);
+    certLabelEl.appendChild(certText);
+    certWrapper.appendChild(certLabelEl);
+    row.appendChild(certWrapper);
+
+    const controls = document.createElement("div");
+    controls.className = "cart-item-controls";
+
+    const qtyControls = document.createElement("div");
+    qtyControls.className = "qty-controls";
+
+    const minus = document.createElement("button");
+    minus.textContent = "−";
+    minus.onclick = () => changeQty(item.id, -1);
+
+    const qty = document.createElement("span");
+    qty.textContent = item.qty;
+
+    const plus = document.createElement("button");
+    plus.textContent = "+";
+    plus.onclick = () => changeQty(item.id, 1);
+
+    qtyControls.appendChild(minus);
+    qtyControls.appendChild(qty);
+    qtyControls.appendChild(plus);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "cart-remove-btn";
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = () => removeFromCart(item.id);
+
+    controls.appendChild(qtyControls);
+    controls.appendChild(removeBtn);
+
+    row.appendChild(controls);
+    container.appendChild(row);
+  });
+
+  const badge = document.getElementById("cartCountBadge");
+  if (badge) {
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    badge.textContent = count;
+    badge.style.opacity = "1";
+  }
+
+  updateCartTotals();
+}
+
+/* --------------------------------------------------
+   UPDATE TOTALS
+-------------------------------------------------- */
+function updateCartTotals() {
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  const certificateCost = cart.reduce((sum, item) => {
+    return sum + (item.certificate ? 30 : 0);
+  }, 0);
+
+  const region = document.getElementById("regionSelect")?.value || "uk";
+  const delivery = DELIVERY_RATES[region] ?? 0;
+
+  const total = subtotal + delivery + certificateCost;
+
+  cartTotal = total;
+
+  document.getElementById("cartSubtotal").textContent = "£" + subtotal.toFixed(2);
+  document.getElementById("cartDelivery").textContent = "£" + delivery.toFixed(2);
+  document.getElementById("cartCertificates").textContent = "£" + certificateCost.toFixed(2);
+  document.getElementById("cartTotal").textContent = "£" + total.toFixed(2);
+
+  const emptyMessage = document.getElementById("empty-cart-message");
+
+  if (cart.length === 0) {
+    emptyMessage.style.display = "block";
+  } else {
+    emptyMessage.style.display = "none";
+  }
+}
+
+/* --------------------------------------------------
+   STRIPE CHECKOUT
+-------------------------------------------------- */
+async function startCheckout() {
+  const response = await fetch('/.netlify/functions/create-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      items: cart,
+      region: document.getElementById('regionSelect').value
+    })
+  });
+
+  const data = await response.json();
+  window.location = data.url;
+}
+
+
+/* --------------------------------------------------
+   PAYPAL CHECKOUT
+-------------------------------------------------- */
+async function startPaypalCheckout() {
+  console.log("PayPal checkout started");
+
+  // ⭐ Load cart from localStorage (your site uses this)
+  const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // ⭐ Build description from cart items
+  const description = cartItems
+    .map(item => {
+      const title = item.title || "Artwork";
+      const size = item.size ? ` – ${item.size}` : "";
+      return `${title}${size}`;
+    })
+    .join(", ");
+
+  // ⭐ Calculate total
+  const total = cartTotal; // your existing global total
+
+  const response = await fetch('/.netlify/functions/create-paypal-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      amount: total.toFixed(2),
+      description: description
+    })
+  });
+
+  const data = await response.json();
+
+  if (data.url) {
+    window.location = data.url; // redirect to PayPal
+  } else {
+    console.error("PayPal error:", data);
+  }
+}
+/* --------------------------------------------------
+   VIGNETTE
+-------------------------------------------------- */
+function openVignette(title, specs, dims, image, text) {
+  document.getElementById("vignetteTitle").innerHTML = title;
+
+  let html = specs + "<br>" + dims;
+
+  if (text && text.trim() !== "") {
+    html += `<br><br>${text}`;
+  }
+
+  document.getElementById("vignetteText").innerHTML = html;
+  document.getElementById("vignetteImage").src = image;
+
+  document.getElementById("artVignette").classList.add("show");
+}
+
+function closeVignette() {
+  document.getElementById("artVignette").classList.remove("show");
+}
+
+// Show success or cancel page based on URL
+// ⭐ Handle Stripe cancel redirect
+const params = new URLSearchParams(window.location.search);
+
+if (params.get("canceled") === "true") {
+  if (typeof clearCart === "function") clearCart();
+  if (typeof updateCartDisplay === "function") updateCartDisplay();
+}
+
+function openCart() {
+  document.getElementById("cartDrawer").classList.add("open");
+  document.body.classList.add("cart-open");
+}
+
+function closeCart() {
+  document.getElementById("cartDrawer").classList.remove("open");
+  document.body.classList.remove("cart-open");
+}
+
+
+</script>
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+</body>
+</html>
