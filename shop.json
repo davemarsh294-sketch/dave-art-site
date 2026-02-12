@@ -1,0 +1,158 @@
+[
+  {
+    "id": "s01",
+    "title": "The Beacon",
+    "image": "Images/beacon.jpg",
+    "alt": "Beacon",
+    "specs": "Giclée print - original size 33cm h × 75cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 33cm h × 75cm w", "price": 5 },
+      { "label": "Size 26cm h x 59cm w", "price": 140 },
+      { "label": "Size 18cm x 42cm", "price": 115 }
+    ]
+  },
+  {
+    "id": "s02",
+    "title": "Android",
+    "image": "Images/android.jpg",
+    "alt": "Android",
+    "specs": "Giclée print - original size 59cm h × 40cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 59cm h × 40cm w", "price": 140 },
+      { "label": "Size 42cm h x 28cm w", "price": 115 },
+      { "label": "Size 29cm h x 19cm h", "price": 100 }
+    ]
+  },
+   {
+    "id": "s03",
+    "title": "Rest In Peace",
+    "image": "Images/rest.jpg",
+    "alt": "Rest In Peace",
+    "specs": "Giclée print - original size 58cm h × 77cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 58cm h × 77cm w", "price": 175 },
+      { "label": "Size 42cm h x 55cm w", "price": 140 },
+      { "label": "Size 29cm h x 38cm w", "price": 115 }
+    ]
+  },
+   {
+    "id": "s04",
+    "title": "Its a Halfpenny Green Moon",
+    "image": "Images/its.jpg",
+    "alt": "Its a Halfpenny Green Moon",
+    "specs": "Giclée print - original size 47cm h × 40cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 47cm h × 40cm w", "price": 140 },
+      { "label": "Size 34cm h x 29cm w", "price": 115 },
+      { "label": "Size 21cm h x 25cm w", "price": 100 }
+    ]
+  },
+  {
+    "id": "s05",
+    "title": "Ghosts of Old Park Hill",
+    "image": "Images/ghosts.jpg",
+    "alt": "Ghosts of Old Park Hill",
+    "specs": "Giclée print - original size 40cm h × 84cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 40cm h × 84cm w", "price": 175 },
+      { "label": "Size 28cm h x 59cm w", "price": 140 },
+      { "label": "Size 20cm h x 42cm w", "price": 115 }
+    ]
+  },
+   {
+    "id": "s06",
+    "title": "Death",
+    "image": "Images/death.jpg",
+    "alt": "Death",
+    "specs": "Giclée print - original size 59cm h × 38cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 59cm h × 39cm w", "price": 140 },
+      { "label": "Size 42cm h x 28cm w", "price": 125 },
+      { "label": "Size 29cm h x 19cm h", "price": 115 }
+    ]
+  },
+   {
+    "id": "s07",
+    "title": "One For Sorrow",
+    "image": "Images/one.jpg",
+    "alt": "One For Sorrow",
+    "specs": "Giclée print - original size 46cm h × 38cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 46cm h × 38cm w", "price": 140 },
+      { "label": "Size 35cm h x 29cm w", "price": 125 },
+      { "label": "Size 21cm h x 24cm w", "price": 110 }
+    ]
+  },
+  {
+    "id": "s08",
+    "title": "Big Boy",
+    "image": "Images/big.jpg",
+    "alt": "Big Boy",
+    "specs": "Giclée print - original size 34cm h × 28cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 34cm h × 28cm w", "price": 140 },
+      { "label": "Size 29cm h x 24cm w", "price": 115 },
+      { "label": "Size 21cm h x 17cm w", "price": 100 }
+    ]
+  },
+   {
+    "id": "s9",
+    "title": "Defiled",
+    "image": "Images/defiled.jpg",
+    "alt": "Defiled",
+    "specs": "Giclée print - original size 40cm h × 40cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 40cm h × 40cm w", "price": 140 },
+      { "label": "Size 29cm h x 29cm w", "price": 125 },
+      { "label": "Size 21cm h x 21cm w", "price": 100 }
+    ]
+  },
+   {
+    "id": "s10",
+    "title": "Rapscallions",
+    "image": "Images/raps.jpg",
+    "alt": "Rapscallions",
+    "specs": "Giclée print - original size 42cm h × 56cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 42cm h × 56cm w", "price": 140 },
+      { "label": "Size 29cm h x 38cm w", "price": 125 },
+      { "label": "Size 21cm h x 28cm w", "price": 100 }
+    ]
+  },
+   {
+    "id": "s11",
+    "title": "Thinking of Chris",
+    "image": "Images/think.jpg",
+    "alt": "Thinking of Chris",
+    "specs": "Giclée print - original size 50cm h × 35cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 50cm h × 35cm w", "price": 140 },
+      { "label": "Size 29cm h x 42cm w", "price": 125 },
+      { "label": "Size 20cm h x 29cm w", "price": 100 }
+    ]
+  },
+  {
+    "id": "s12",
+    "title": "Home is North",
+    "image": "Images/home.jpg",
+    "alt": "Home is North",
+    "specs": "Giclée print - original size 38cm h × 50cm w",
+    "edition": "Limited edition of 50",
+    "sizes": [
+      { "label": "Original size 38cm h × 50cm w", "price": 140 },
+      { "label": "Size 29cm h x 38cm w", "price": 125 },
+      { "label": "Size 21cm h x 29cm w", "price": 100 }
+    ]
+  }
+]
