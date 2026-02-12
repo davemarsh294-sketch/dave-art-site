@@ -594,23 +594,24 @@
     }
 
 
-/* The drawer itself: fixed to viewport, full height */
-#cartDrawer.cart-drawer {
+/* CART DRAWER — fixed right-side panel */
+#cartDrawer {
   position: fixed;
   top: 0;
   right: 0;
-  bottom: 0;
-  width: 100%;
-  max-width: 420px;          /* or whatever you use */
+  width: 90%;
+  max-width: 420px;
+  height: 100vh;
   background: #fff;
-  box-shadow: -2px 0 8px rgba(0,0,0,0.08);
+  box-shadow: -2px 0 8px rgba(0,0,0,0.1);
   z-index: 9999;
 
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-/* Header stays at top */
+/* HEADER */
 .cart-header {
   padding: 16px 20px;
   border-bottom: 1px solid var(--line);
@@ -619,19 +620,22 @@
   align-items: center;
 }
 
-/* Scrollable middle area */
+/* SCROLLABLE CONTENT */
 .cart-content {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  padding-bottom: 140px; /* space above footer */
+  padding-bottom: 140px; /* ensures items never hide behind footer */
 }
 
-/* Footer pinned to bottom, always visible */
+/* FIXED FOOTER WITH PAYMENT BUTTONS */
 .cart-footer {
   padding: 20px;
   border-top: 1px solid var(--line);
   background: #fff;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
     body.cart-open {
