@@ -54,22 +54,9 @@
 
   <a href="/">Return Home</a>
 
-  <script>
-    // ⭐ Clear the cart after successful PayPal payment
-    localStorage.removeItem("cart");
-
-    // ⭐ If your site uses a cart count badge, reset it
-    const cartCount = document.getElementById("cart-count");
-    if (cartCount) cartCount.textContent = "0";
-
-    // ⭐ If your site uses a cart drawer, ensure it resets cleanly
-    const emptyMessage = document.getElementById("empty-cart-message");
-    const cartItems = document.getElementById("cart-items");
-    const cartSummary = document.getElementById("cartSummary");
-
-    if (emptyMessage) emptyMessage.style.display = "block";
-    if (cartItems) cartItems.innerHTML = "";
-    if (cartSummary) cartSummary.style.display = "none";
-  </script>
+<script>
+  // Mark that checkout was completed
+  localStorage.setItem("cartCleared", "true");
+</script>
 </body>
 </html>
