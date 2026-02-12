@@ -50,8 +50,26 @@
   <h1>Thank You</h1>
 
   <p>Your payment has been received successfully.</p>
-  <p>I’ll prepare your artwork for delivery and email you shortly with confirmation.</p>
+  <p>Your artwork will be prepared for delivery shortly.</p>
 
   <a href="/">Return Home</a>
+
+  <script>
+    // ⭐ Clear the cart after successful PayPal payment
+    localStorage.removeItem("cart");
+
+    // ⭐ If your site uses a cart count badge, reset it
+    const cartCount = document.getElementById("cart-count");
+    if (cartCount) cartCount.textContent = "0";
+
+    // ⭐ If your site uses a cart drawer, ensure it resets cleanly
+    const emptyMessage = document.getElementById("empty-cart-message");
+    const cartItems = document.getElementById("cart-items");
+    const cartSummary = document.getElementById("cartSummary");
+
+    if (emptyMessage) emptyMessage.style.display = "block";
+    if (cartItems) cartItems.innerHTML = "";
+    if (cartSummary) cartSummary.style.display = "none";
+  </script>
 </body>
 </html>
