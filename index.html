@@ -592,6 +592,35 @@
       background: #fff;
       font-size: 12px;
     }
+
+
+/* Make the drawer a full-height column layout */
+.cart-drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* Scrollable area for items + totals */
+.cart-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  padding-bottom: 140px; /* ensures items never hide behind footer */
+}
+
+/* Footer stays fixed at bottom */
+.cart-footer {
+  padding: 20px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+    
   </style>
 </head>
 
@@ -693,11 +722,15 @@
   </section>
 
   <!-- CART DRAWER -->
-  <div id="cartDrawer">
-    <div class="cart-header">
-      <span>Shopping Cart</span>
-      <button onclick="closeCart()" class="cart-close">×</button>
-    </div>
+<div id="cartDrawer" class="cart-drawer">
+
+  <div class="cart-header">
+    <span>Shopping Cart</span>
+    <button onclick="closeCart()" class="cart-close">×</button>
+  </div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="cart-content">
 
     <div id="empty-cart-message" class="empty-cart-message">
       Your cart is empty
@@ -736,21 +769,24 @@
         </select>
       </div>
 
-      <div class="cart-payment-buttons" style="padding-top:20px; border-top:1px solid var(--line);">
-        <button onclick="startCheckout()"
-          style="width:100%; padding:12px; background:black; color:white; border:none; margin-bottom:12px;
-                 letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
-          Checkout with Card, GooglePay or ApplePay
-        </button>
-
-       <button onclick="startPaypalCheckout()"
-  style="width:100%; padding:12px; background:#ffc439; color:#111; border:none;
-         letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
-  Pay with PayPal
-</button>
-
     </div>
   </div>
+
+  <!-- FIXED FOOTER WITH PAYMENT BUTTONS -->
+  <div class="cart-footer">
+    <button onclick="startCheckout()"
+      style="width:100%; padding:12px; background:black; color:white; border:none; margin-bottom:12px;
+             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
+      Checkout with Card, GooglePay or ApplePay
+    </button>
+
+    <button onclick="startPaypalCheckout()"
+      style="width:100%; padding:12px; background:#ffc439; color:#111; border:none;
+             letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
+      Pay with PayPal
+    </button>
+  </div>
+
 </div>
   <!-- IMPORTANT INFORMATION -->
   <section class="info-section">
