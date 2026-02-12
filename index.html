@@ -609,6 +609,15 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  /* SLIDE-IN MECHANICS (critical) */
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+/* When cart is opened */
+#cartDrawer.open {
+  transform: translateX(0);
 }
 
 /* HEADER */
@@ -620,7 +629,7 @@
   align-items: center;
 }
 
-/* SCROLLABLE CONTENT */
+/* SCROLLABLE CONTENT AREA */
 .cart-content {
   flex: 1;
   overflow-y: auto;
@@ -638,10 +647,10 @@
   z-index: 10;
 }
 
-    body.cart-open {
+/* Prevent background scrolling when cart is open */
+body.cart-open {
   overflow: hidden;
 }
-    
   </style>
 </head>
 
