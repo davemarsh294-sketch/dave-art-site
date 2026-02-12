@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Cancelled</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --line: #e5e5e5;
+      --text: #111;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 40px 24px;
+      color: var(--text);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      letter-spacing: 0.03em;
+    }
+
+    p {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 22px;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--text);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Payment Cancelled</h1>
+
+  <p>Your checkout was cancelled before completion.</p>
+  <p>No payment was taken.</p>
+
+  <a href="/">Return Home</a>
+
+  <!-- ⭐ Clear cart on cancel -->
+  <script>
+    // Remove the actual cart key
+    localStorage.removeItem("dm_cart");
+
+    // Reset in-memory cart if index.js is loaded
+    if (typeof cart !== "undefined") {
+      cart.length = 0;
+    }
+
+    // Reset badge manually
+    const badge = document.getElementById("cartCountBadge");
+    if (badge) badge.textContent = "0";
+  </script>
+
+</body>
+</html>
