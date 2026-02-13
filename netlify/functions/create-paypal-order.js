@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-// ⭐ Load delivery.json from the SAME folder as this function
-const deliveryRatesPath = path.join(__dirname, "delivery.json");
+// ⭐ Load delivery.json from the bundled data folder
+const deliveryRatesPath = path.join(__dirname, "data", "delivery.json");
 const DELIVERY_RATES = JSON.parse(fs.readFileSync(deliveryRatesPath, "utf8"));
 
 exports.handler = async (event) => {
@@ -53,22 +53,3 @@ exports.handler = async (event) => {
             },
             description: "Artwork Order"
           }
-        ]
-      })
-    });
-
-    const data = await paypalOrder.json();
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ id: data.id })
-    };
-
-  } catch (err) {
-    console.error("PayPal error:", err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
-    };
-  }
-};
