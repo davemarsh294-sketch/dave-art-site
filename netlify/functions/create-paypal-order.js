@@ -64,7 +64,10 @@ exports.handler = async (event) => {
           brand_name: "Dave Marsh Artist",
           landing_page: "LOGIN",
           user_action: "PAY_NOW",
-          return_url: "https://davemarshartist.uk/thank-you",
+
+          // ⭐ IMPORTANT FIX — PayPal will now append the token
+          return_url: "https://davemarshartist.uk/thank-you?token=",
+
           cancel_url: "https://davemarshartist.uk/cancelled.html"
         },
 
