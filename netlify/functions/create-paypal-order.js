@@ -105,34 +105,63 @@ exports.handler = async (event) => {
     // ---------------------------------------------
     // 3. Extract approval URL
     // ---------------------------------------------
-    const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
+const fs = require("fs");
+const path = require("path");
+const fetch = require("node-fetch");   // ⭐ REQUIRED
 
-    if (!approvalUrl) {
-      console.error("PayPal response:", data);
-      throw new Error("No approval URL returned from PayPal");
+// Load delivery.json
+const deliveryRatesPath = path.join(__dirname, "data", "delivery.json");
+const DELIVERY_RATES = JSON.parse(fs.readFileSync(deliveryRatesPath, "utf8"));
+
+exports.handler = async (event) => {
+  try {
+    const body = JSON.parse(event.body);
+
+    const items = body.items || [];
+    const region = body.region || "uk";
+
+    // ---------------------------------------------
+    // 1. Build PayPal line items + calculate totals
+    // ---------------------------------------------
+    let itemsTotal = 0;
+
+    const paypalItems = items.map(item => {
+      const lineTotal = item.price * item.qty;
+      itemsTotal += lineTotal;
+
+      return {
+        name: `${item.title}${item.size ? " – " + item.size : ""}`,
+        unit_amount: {
+          currency_code: "GBP",
+          value: item.price.toFixed(2)
+        },
+        quantity: item.qty.toString()   // ⭐ FIXED
+      };
+    });
+
+    // Delivery
+    const delivery = DELIVERY_RATES[region] || 0;
+    if (delivery > 0) {
+      paypalItems.push({
+        name: "Delivery",
+        unit_amount: { currency_code: "GBP", value: delivery.toFixed(2) },
+        quantity: "1"   // ⭐ FIXED
+      });
     }
 
-    // ---------------------------------------------
-    // 4. Return redirect URL to front-end
-    // ---------------------------------------------
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ url: approvalUrl })
-    };
+    // Certificate fee
+    let certificateFee = 0;
+    items.forEach(item => {
+      if (item.certificate) {
+        certificateFee += 30 * item.qty;
+      }
+    });
 
-  } catch (err) {
-    console.error("PayPal error:", err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
-    };
-  }
-};
     if (certificateFee > 0) {
       paypalItems.push({
         name: "Certificate of Authenticity",
         unit_amount: { currency_code: "GBP", value: certificateFee.toFixed(2) },
-        quantity: 1
+        quantity: "1"   // ⭐ FIXED
       });
     }
 
@@ -153,7 +182,6 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         intent: "CAPTURE",
 
-        // ⭐ REQUIRED FOR REDIRECT CHECKOUT
         application_context: {
           brand_name: "Dave Marsh Artist",
           landing_page: "LOGIN",
@@ -182,9 +210,6 @@ exports.handler = async (event) => {
 
     const data = await paypalOrder.json();
 
-    // ---------------------------------------------
-    // 3. Extract approval URL
-    // ---------------------------------------------
     const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
 
     if (!approvalUrl) {
@@ -192,9 +217,6 @@ exports.handler = async (event) => {
       throw new Error("No approval URL returned from PayPal");
     }
 
-    // ---------------------------------------------
-    // 4. Return redirect URL to front-end
-    // ---------------------------------------------
     return {
       statusCode: 200,
       body: JSON.stringify({ url: approvalUrl })
