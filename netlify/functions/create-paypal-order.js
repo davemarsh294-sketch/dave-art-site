@@ -13,21 +13,35 @@ exports.handler = async (event) => {
     const region = body.region || "uk";
 
     // ---------------------------------------------
-    // 1. Calculate item total
+    // 1. Build PayPal line items + calculate totals
     // ---------------------------------------------
     let itemsTotal = 0;
-    items.forEach(item => {
-      itemsTotal += item.price * item.qty;
+
+    const paypalItems = items.map(item => {
+      const lineTotal = item.price * item.qty;
+      itemsTotal += lineTotal;
+
+      return {
+        name: `${item.title}${item.size ? " – " + item.size : ""}`,
+        unit_amount: {
+          currency_code: "GBP",
+          value: item.price.toFixed(2)
+        },
+        quantity: item.qty
+      };
     });
 
-    // ---------------------------------------------
-    // 2. Delivery fee
-    // ---------------------------------------------
+    // Delivery
     const delivery = DELIVERY_RATES[region] || 0;
+    if (delivery > 0) {
+      paypalItems.push({
+        name: "Delivery",
+        unit_amount: { currency_code: "GBP", value: delivery.toFixed(2) },
+        quantity: 1
+      });
+    }
 
-    // ---------------------------------------------
-    // 3. Certificate fee
-    // ---------------------------------------------
+    // Certificate fee
     let certificateFee = 0;
     items.forEach(item => {
       if (item.certificate) {
@@ -35,13 +49,19 @@ exports.handler = async (event) => {
       }
     });
 
-    // ---------------------------------------------
-    // 4. Final total
-    // ---------------------------------------------
+    if (certificateFee > 0) {
+      paypalItems.push({
+        name: "Certificate of Authenticity",
+        unit_amount: { currency_code: "GBP", value: certificateFee.toFixed(2) },
+        quantity: 1
+      });
+    }
+
+    // Final total
     const total = itemsTotal + delivery + certificateFee;
 
     // ---------------------------------------------
-    // 5. Create PayPal order (LIVE)
+    // 2. Create PayPal order (LIVE)
     // ---------------------------------------------
     const paypalOrder = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
       method: "POST",
@@ -54,7 +74,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         intent: "CAPTURE",
 
-        // ⭐ THIS FIXES THE REVIEW ORDER LOOP ⭐
+        // ⭐ REQUIRED FOR REDIRECT CHECKOUT
         application_context: {
           brand_name: "Dave Marsh Artist",
           landing_page: "LOGIN",
@@ -74,6 +94,7 @@ exports.handler = async (event) => {
                 handling: { currency_code: "GBP", value: certificateFee.toFixed(2) }
               }
             },
+            items: paypalItems,
             description: "Artwork Order"
           }
         ]
@@ -83,7 +104,7 @@ exports.handler = async (event) => {
     const data = await paypalOrder.json();
 
     // ---------------------------------------------
-    // 6. Extract approval URL
+    // 3. Extract approval URL
     // ---------------------------------------------
     const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
 
@@ -93,7 +114,7 @@ exports.handler = async (event) => {
     }
 
     // ---------------------------------------------
-    // 7. Return redirect URL to front-end
+    // 4. Return redirect URL to front-end
     // ---------------------------------------------
     return {
       statusCode: 200,
