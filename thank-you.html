@@ -85,5 +85,33 @@
     }
   </script>
 
+  <script>
+async function captureOrder() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("token");
+
+  if (!token) {
+    document.body.innerHTML = "<h2>No PayPal token found.</h2>";
+    return;
+  }
+
+  const res = await fetch("/.netlify/functions/capture-paypal-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token })
+  });
+
+  const data = await res.json();
+
+  if (data.status === "COMPLETED") {
+    document.body.innerHTML = "<h2>Payment successful — thank you!</h2>";
+  } else {
+    document.body.innerHTML = "<h2>Payment not completed.</h2>";
+  }
+}
+
+captureOrder();
+</script>
+
 </body>
 </html>
