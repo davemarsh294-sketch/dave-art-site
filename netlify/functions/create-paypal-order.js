@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fetch = require("node-fetch");   // Required for Netlify Node 16
+const fetch = require("node-fetch");
 
 // Load delivery.json
 const deliveryRatesPath = path.join(__dirname, "data", "delivery.json");
@@ -28,35 +28,20 @@ exports.handler = async (event) => {
           currency_code: "GBP",
           value: item.price.toFixed(2)
         },
-        quantity: item.qty.toString()   // MUST be a string
+        quantity: item.qty.toString()
       };
     });
 
-    // Delivery
+    // Delivery (NOT added as an item)
     const delivery = DELIVERY_RATES[region] || 0;
-    if (delivery > 0) {
-      paypalItems.push({
-        name: "Delivery",
-        unit_amount: { currency_code: "GBP", value: delivery.toFixed(2) },
-        quantity: "1"
-      });
-    }
 
-    // Certificate fee
+    // Certificate fee (NOT added as an item)
     let certificateFee = 0;
     items.forEach(item => {
       if (item.certificate) {
         certificateFee += 30 * item.qty;
       }
     });
-
-    if (certificateFee > 0) {
-      paypalItems.push({
-        name: "Certificate of Authenticity",
-        unit_amount: { currency_code: "GBP", value: certificateFee.toFixed(2) },
-        quantity: "1"
-      });
-    }
 
     // Final total
     const total = itemsTotal + delivery + certificateFee;
@@ -103,19 +88,14 @@ exports.handler = async (event) => {
 
     const data = await paypalOrder.json();
 
-    // ---------------------------------------------
-    // 3. Extract approval URL
-    // ---------------------------------------------
+    console.log("PAYPAL RAW RESPONSE:", data);
+
     const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
 
     if (!approvalUrl) {
-      console.error("PAYPAL RAW RESPONSE:", data);
       throw new Error("No approval URL returned from PayPal");
     }
 
-    // ---------------------------------------------
-    // 4. Return redirect URL to front-end
-    // ---------------------------------------------
     return {
       statusCode: 200,
       body: JSON.stringify({ url: approvalUrl })
