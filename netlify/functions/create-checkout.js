@@ -2,9 +2,42 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fs = require("fs");
 const path = require("path");
 
-// ⭐ Load delivery.json from the SAME folder as this function
-const deliveryRatesPath = path.join(__dirname, "delivery.json");
-const DELIVERY_RATES = JSON.parse(fs.readFileSync(deliveryRatesPath, "utf8"));
+// ⭐ Diagnostic: show what Netlify actually deployed
+console.log("=== NETLIFY FUNCTION DIAGNOSTIC START ===");
+console.log("DIRNAME:", __dirname);
+
+try {
+  console.log("DIR CONTENTS:", fs.readdirSync(__dirname));
+} catch (e) {
+  console.log("ERROR READING DIR CONTENTS:", e);
+}
+
+const dataFolder = path.join(__dirname, "data");
+console.log("DATA FOLDER PATH:", dataFolder);
+console.log("DATA FOLDER EXISTS:", fs.existsSync(dataFolder));
+
+if (fs.existsSync(dataFolder)) {
+  try {
+    console.log("DATA FOLDER CONTENTS:", fs.readdirSync(dataFolder));
+  } catch (e) {
+    console.log("ERROR READING DATA FOLDER:", e);
+  }
+}
+
+const deliveryRatesPath = path.join(__dirname, "data", "delivery.json");
+console.log("LOOKING FOR DELIVERY JSON AT:", deliveryRatesPath);
+console.log("DELIVERY JSON EXISTS:", fs.existsSync(deliveryRatesPath));
+
+console.log("=== NETLIFY FUNCTION DIAGNOSTIC END ===");
+
+// ⭐ Load delivery.json (this is what is failing)
+let DELIVERY_RATES = {};
+try {
+  DELIVERY_RATES = JSON.parse(fs.readFileSync(deliveryRatesPath, "utf8"));
+  console.log("DELIVERY_RATES LOADED:", DELIVERY_RATES);
+} catch (err) {
+  console.error("ERROR LOADING DELIVERY_RATES:", err);
+}
 
 exports.handler = async (event) => {
   try {
@@ -12,16 +45,13 @@ exports.handler = async (event) => {
     const items = body.items || [];
     const region = body.region || "uk";
 
-    // 1. Items total
     let itemsTotal = 0;
     items.forEach(item => {
       itemsTotal += item.price * item.qty;
     });
 
-    // 2. Delivery fee
     const delivery = DELIVERY_RATES[region] || 0;
 
-    // 3. Certificate fee
     let certificateFee = 0;
     items.forEach(item => {
       if (item.certificate) {
@@ -29,17 +59,13 @@ exports.handler = async (event) => {
       }
     });
 
-    // 4. Final total
     const total = itemsTotal + delivery + certificateFee;
 
-    // 5. Create Stripe session
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
-
       success_url: 'https://davemarshartist.uk/thank-you',
       cancel_url: 'https://davemarshartist.uk/cancelled.html',
-
       line_items: [
         {
           price_data: {
@@ -58,7 +84,7 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    console.error("Stripe error:", err);
+    console.error("STRIPE FUNCTION ERROR:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
