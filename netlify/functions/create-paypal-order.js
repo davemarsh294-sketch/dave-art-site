@@ -27,7 +27,7 @@ exports.handler = async (event) => {
           currency_code: "GBP",
           value: item.price.toFixed(2)
         },
-        quantity: item.qty
+        quantity: item.qty.toString()   // ⭐ FIXED
       };
     });
 
@@ -37,7 +37,7 @@ exports.handler = async (event) => {
       paypalItems.push({
         name: "Delivery",
         unit_amount: { currency_code: "GBP", value: delivery.toFixed(2) },
-        quantity: 1
+        quantity: "1"   // ⭐ FIXED
       });
     }
 
@@ -49,6 +49,85 @@ exports.handler = async (event) => {
       }
     });
 
+    if (certificateFee > 0) {
+      paypalItems.push({
+        name: "Certificate of Authenticity",
+        unit_amount: { currency_code: "GBP", value: certificateFee.toFixed(2) },
+        quantity: "1"   // ⭐ FIXED
+      });
+    }
+
+    // Final total
+    const total = itemsTotal + delivery + certificateFee;
+
+    // ---------------------------------------------
+    // 2. Create PayPal order (LIVE)
+    // ---------------------------------------------
+    const paypalOrder = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${Buffer.from(
+          process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_SECRET
+        ).toString("base64")}`
+      },
+      body: JSON.stringify({
+        intent: "CAPTURE",
+
+        application_context: {
+          brand_name: "Dave Marsh Artist",
+          landing_page: "LOGIN",
+          user_action: "PAY_NOW",
+          return_url: "https://davemarshartist.uk/thank-you",
+          cancel_url: "https://davemarshartist.uk/cancelled.html"
+        },
+
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "GBP",
+              value: total.toFixed(2),
+              breakdown: {
+                item_total: { currency_code: "GBP", value: itemsTotal.toFixed(2) },
+                shipping: { currency_code: "GBP", value: delivery.toFixed(2) },
+                handling: { currency_code: "GBP", value: certificateFee.toFixed(2) }
+              }
+            },
+            items: paypalItems,
+            description: "Artwork Order"
+          }
+        ]
+      })
+    });
+
+    const data = await paypalOrder.json();
+
+    // ---------------------------------------------
+    // 3. Extract approval URL
+    // ---------------------------------------------
+    const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
+
+    if (!approvalUrl) {
+      console.error("PayPal response:", data);
+      throw new Error("No approval URL returned from PayPal");
+    }
+
+    // ---------------------------------------------
+    // 4. Return redirect URL to front-end
+    // ---------------------------------------------
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ url: approvalUrl })
+    };
+
+  } catch (err) {
+    console.error("PayPal error:", err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
+    };
+  }
+};
     if (certificateFee > 0) {
       paypalItems.push({
         name: "Certificate of Authenticity",
