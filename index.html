@@ -1476,9 +1476,11 @@ async function startPaypalCheckout() {
   }
 }
 </script>
-/* --------------------------------------------------
-    VIGNETTE
--------------------------------------------------- */
+
+<!-- --------------------------------------------------
+     VIGNETTE
+-------------------------------------------------- -->
+<script>
 function openVignette(title, specs, dims, image, text) {
   document.getElementById("vignetteTitle").innerHTML = title;
 
@@ -1499,7 +1501,6 @@ function closeVignette() {
 }
 
 // Show success or cancel page based on URL
-// ⭐ Handle Stripe cancel redirect
 const params = new URLSearchParams(window.location.search);
 
 if (params.get("canceled") === "true") {
@@ -1520,43 +1521,6 @@ function closeCart() {
 
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
-
-<!-- ⭐ RESTORED ORIGINAL PAYPAL REDIRECT CHECKOUT -->
-<script>
-async function startPaypalCheckout() {
-  // Make sure cart is saved
-  saveCart();
-
-  const cartItems = JSON.parse(localStorage.getItem("dm_cart")) || [];
-
-  const description = cartItems
-    .map(item => {
-      const title = item.title || "Artwork";
-      const size = item.size ? ` – ${item.size}` : "";
-      return `${title}${size}`;
-    })
-    .join(", ");
-
-  const total = cartTotal;
-
-  const response = await fetch('/.netlify/functions/create-paypal-order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      amount: total.toFixed(2),
-      description: description
-    })
-  });
-
-  const data = await response.json();
-
-  if (data.url) {
-    window.location = data.url; // ⭐ Redirect to PayPal
-  } else {
-    console.error("PayPal error:", data);
-  }
-}
-</script>
 
 </body>
 </html>
