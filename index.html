@@ -1441,9 +1441,9 @@ console.log("DIAGNOSTIC — cartItems being sent to Stripe:", cartItems);
 /* --------------------------------------------------
    PAYPAL CHECKOUT
 -------------------------------------------------- */
+<script>
 async function startPaypalCheckout() {
-
-  // ⭐ Make sure dm_cart is up to date
+  // Make sure cart is saved
   saveCart();
 
   const cartItems = JSON.parse(localStorage.getItem("dm_cart")) || [];
@@ -1470,13 +1470,14 @@ async function startPaypalCheckout() {
   const data = await response.json();
 
   if (data.url) {
-    window.location = data.url;
+    window.location = data.url; // ⭐ Redirect to PayPal
   } else {
     console.error("PayPal error:", data);
   }
 }
+</script>
 /* --------------------------------------------------
-   VIGNETTE
+    VIGNETTE
 -------------------------------------------------- */
 function openVignette(title, specs, dims, image, text) {
   document.getElementById("vignetteTitle").innerHTML = title;
@@ -1515,43 +1516,47 @@ function closeCart() {
   document.getElementById("cartDrawer").classList.remove("open");
   document.body.classList.remove("cart-open");
 }
-
-
 </script>
-
-
-
-
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
+<!-- ⭐ RESTORED ORIGINAL PAYPAL REDIRECT CHECKOUT -->
 <script>
-function startPaypalCheckout() {
-  paypal.Buttons({
-    createOrder: function(data, actions) {
-      // ⭐ Simple £1 test order
-      return actions.order.create({
-        purchase_units: [{
-          amount: {
-            value: "1.00",
-            currency_code: "GBP"
-          }
-        }]
-      });
-    },
+async function startPaypalCheckout() {
+  // Make sure cart is saved
+  saveCart();
 
-    onApprove: function(data, actions) {
-      // ⭐ This will run after the user approves the £1 test
-      alert("PayPal popup worked!");
-      return actions.order.capture();
-    }
-  }).render("#paypal-button-container");
+  const cartItems = JSON.parse(localStorage.getItem("dm_cart")) || [];
+
+  const description = cartItems
+    .map(item => {
+      const title = item.title || "Artwork";
+      const size = item.size ? ` – ${item.size}` : "";
+      return `${title}${size}`;
+    })
+    .join(", ");
+
+  const total = cartTotal;
+
+  const response = await fetch('/.netlify/functions/create-paypal-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      amount: total.toFixed(2),
+      description: description
+    })
+  });
+
+  const data = await response.json();
+
+  if (data.url) {
+    window.location = data.url; // ⭐ Redirect to PayPal
+  } else {
+    console.error("PayPal error:", data);
+  }
 }
 </script>
 
-  <script src="https://www.paypal.com/sdk/js?client-id=AVoMcWRRRoD8dn2o3bsrqTHJUBQ2JFUpVgfTARmF2Sq45_kKx3fl1Yx1q3n2P-Sca8InzrgDRgrBlq0h&currency=GBP"></script>
 </body>
 </html>
