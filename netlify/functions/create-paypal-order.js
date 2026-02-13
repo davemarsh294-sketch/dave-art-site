@@ -9,7 +9,7 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
 
-    // ⭐ Front-end now sends full cart + region
+    // ⭐ Front-end sends full cart + region
     const items = body.items || [];
     const region = body.region || "uk";
 
