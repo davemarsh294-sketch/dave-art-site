@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fetch = require("node-fetch");
+const fetch = require("node-fetch");   // Required for Netlify Node 16
 
 // Load delivery.json
 const deliveryRatesPath = path.join(__dirname, "data", "delivery.json");
@@ -28,7 +28,7 @@ exports.handler = async (event) => {
           currency_code: "GBP",
           value: item.price.toFixed(2)
         },
-        quantity: item.qty.toString()
+        quantity: item.qty.toString()   // MUST be a string
       };
     });
 
@@ -103,13 +103,19 @@ exports.handler = async (event) => {
 
     const data = await paypalOrder.json();
 
+    // ---------------------------------------------
+    // 3. Extract approval URL
+    // ---------------------------------------------
     const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
 
     if (!approvalUrl) {
-      console.error("PayPal response:", data);
+      console.error("PAYPAL RAW RESPONSE:", data);
       throw new Error("No approval URL returned from PayPal");
     }
 
+    // ---------------------------------------------
+    // 4. Return redirect URL to front-end
+    // ---------------------------------------------
     return {
       statusCode: 200,
       body: JSON.stringify({ url: approvalUrl })
