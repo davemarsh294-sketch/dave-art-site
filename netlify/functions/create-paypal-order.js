@@ -59,9 +59,16 @@ exports.handler = async (event) => {
 
     const data = await paypalOrder.json();
 
+    // ⭐ FIX: Extract approval URL
+    const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
+
+    if (!approvalUrl) {
+      throw new Error("No approval URL returned from PayPal");
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ id: data.id })
+      body: JSON.stringify({ url: approvalUrl })
     };
 
   } catch (err) {
