@@ -56,17 +56,33 @@
 
   <!-- ⭐ Clear cart on success -->
   <script>
-    // Remove the actual cart key
     localStorage.removeItem("dm_cart");
 
-    // Reset in-memory cart if index.js is loaded
     if (typeof cart !== "undefined") {
       cart.length = 0;
     }
 
-    // Reset badge manually
     const badge = document.getElementById("cartCountBadge");
     if (badge) badge.textContent = "0";
+  </script>
+
+  <!-- ⭐ Capture PayPal order when returning from PayPal -->
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (token) {
+      fetch("/.netlify/functions/capture-paypal-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log("PayPal capture result:", data);
+      })
+      .catch(err => console.error("PayPal capture error:", err));
+    }
   </script>
 
 </body>
