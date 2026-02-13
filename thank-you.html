@@ -2,116 +2,72 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thank You</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    :root {
-      --line: #e5e5e5;
-      --text: #111;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 40px 24px;
-      color: var(--text);
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      max-width: 600px;
+      margin: 0 auto;
       line-height: 1.6;
-      text-align: center;
+      color: #222;
     }
-
-    h1 {
-      font-size: 26px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      letter-spacing: 0.03em;
+    h1, h2 {
+      font-weight: 400;
     }
-
-    p {
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    a {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 12px 22px;
-      border: 1px solid var(--line);
-      text-decoration: none;
-      color: var(--text);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-size: 13px;
+    .loading {
+      opacity: 0.6;
     }
   </style>
 </head>
 
 <body>
-  <h1>Thank You</h1>
+  <h1>Processing your payment…</h1>
+  <p>Please wait a moment.</p>
 
-  <p>Your payment has been received successfully.</p>
-  <p>Your artwork will be prepared for delivery shortly.</p>
-
-  <a href="/">Return Home</a>
-
-  <!-- ⭐ Clear cart on success -->
   <script>
-    localStorage.removeItem("dm_cart");
+    async function captureOrder() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
 
-    if (typeof cart !== "undefined") {
-      cart.length = 0;
-    }
+      if (!token) {
+        document.body.innerHTML = `
+          <h2>Unable to verify your payment.</h2>
+          <p>No PayPal token was returned.</p>
+        `;
+        return;
+      }
 
-    const badge = document.getElementById("cartCountBadge");
-    if (badge) badge.textContent = "0";
-  </script>
-
-  <!-- ⭐ Capture PayPal order when returning from PayPal -->
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-
-    if (token) {
-      fetch("/.netlify/functions/capture-paypal-order", {
+      // Call your Netlify capture function
+      const res = await fetch("/.netlify/functions/capture-paypal-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token })
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log("PayPal capture result:", data);
-      })
-      .catch(err => console.error("PayPal capture error:", err));
+      });
+
+      const data = await res.json();
+
+      // SUCCESS
+      if (data.status === "COMPLETED") {
+        document.body.innerHTML = `
+          <h1>Thank you</h1>
+          <p>Your payment has been received successfully.</p>
+          <p>Order ID: <strong>${data.id}</strong></p>
+        `;
+        return;
+      }
+
+      // FAILURE
+      document.body.innerHTML = `
+        <h2>Payment not completed</h2>
+        <p>Something went wrong capturing your PayPal payment.</p>
+      `;
     }
+
+    captureOrder();
   </script>
-
-  <script>
-async function captureOrder() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get("token");
-
-  if (!token) {
-    document.body.innerHTML = "<h2>No PayPal token found.</h2>";
-    return;
-  }
-
-  const res = await fetch("/.netlify/functions/capture-paypal-order", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token })
-  });
-
-  const data = await res.json();
-
-  if (data.status === "COMPLETED") {
-    document.body.innerHTML = "<h2>Payment successful — thank you!</h2>";
-  } else {
-    document.body.innerHTML = "<h2>Payment not completed.</h2>";
-  }
-}
-
-captureOrder();
-</script>
 
 </body>
 </html>
