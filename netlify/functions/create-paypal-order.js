@@ -53,3 +53,22 @@ exports.handler = async (event) => {
             },
             description: "Artwork Order"
           }
+        ]
+      })
+    });
+
+    const data = await paypalOrder.json();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ id: data.id })
+    };
+
+  } catch (err) {
+    console.error("PayPal error:", err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
+    };
+  }
+};
