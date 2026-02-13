@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-// ⭐ Load delivery.json from the bundled data folder
+// Load delivery.json
 const deliveryRatesPath = path.join(__dirname, "data", "delivery.json");
 const DELIVERY_RATES = JSON.parse(fs.readFileSync(deliveryRatesPath, "utf8"));
 
@@ -9,26 +9,25 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
 
-    // ⭐ Front-end sends full cart + region
     const items = body.items || [];
     const region = body.region || "uk";
 
-    // --------------------------------------------------
+    // ---------------------------------------------
     // 1. Calculate item total
-    // --------------------------------------------------
+    // ---------------------------------------------
     let itemsTotal = 0;
     items.forEach(item => {
       itemsTotal += item.price * item.qty;
     });
 
-    // --------------------------------------------------
+    // ---------------------------------------------
     // 2. Delivery fee
-    // --------------------------------------------------
+    // ---------------------------------------------
     const delivery = DELIVERY_RATES[region] || 0;
 
-    // --------------------------------------------------
+    // ---------------------------------------------
     // 3. Certificate fee
-    // --------------------------------------------------
+    // ---------------------------------------------
     let certificateFee = 0;
     items.forEach(item => {
       if (item.certificate) {
@@ -36,14 +35,14 @@ exports.handler = async (event) => {
       }
     });
 
-    // --------------------------------------------------
+    // ---------------------------------------------
     // 4. Final total
-    // --------------------------------------------------
+    // ---------------------------------------------
     const total = itemsTotal + delivery + certificateFee;
 
-    // --------------------------------------------------
-    // 5. Create PayPal order
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // 5. Create PayPal order (LIVE)
+    // ---------------------------------------------
     const paypalOrder = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
       method: "POST",
       headers: {
@@ -54,6 +53,16 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({
         intent: "CAPTURE",
+
+        // ⭐ THIS FIXES THE REVIEW ORDER LOOP ⭐
+        application_context: {
+          brand_name: "Dave Marsh Artist",
+          landing_page: "LOGIN",
+          user_action: "PAY_NOW",
+          return_url: "https://davemarshartist.uk/thank-you",
+          cancel_url: "https://davemarshartist.uk/cancelled.html"
+        },
+
         purchase_units: [
           {
             amount: {
@@ -73,18 +82,19 @@ exports.handler = async (event) => {
 
     const data = await paypalOrder.json();
 
-    // --------------------------------------------------
-    // ⭐ 6. Extract approval URL
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // 6. Extract approval URL
+    // ---------------------------------------------
     const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
 
     if (!approvalUrl) {
+      console.error("PayPal response:", data);
       throw new Error("No approval URL returned from PayPal");
     }
 
-    // --------------------------------------------------
+    // ---------------------------------------------
     // 7. Return redirect URL to front-end
-    // --------------------------------------------------
+    // ---------------------------------------------
     return {
       statusCode: 200,
       body: JSON.stringify({ url: approvalUrl })
