@@ -1,54 +1,36 @@
-const fs = require("fs");
-const path = require("path");
 const fetch = require("node-fetch");
-
-// Load delivery.json
-const deliveryRatesPath = path.join(__dirname, "data", "delivery.json");
-const DELIVERY_RATES = JSON.parse(fs.readFileSync(deliveryRatesPath, "utf8"));
 
 exports.handler = async (event) => {
   try {
-    const body = JSON.parse(event.body);
+    const body = JSON.parse(event.body || "{}");
 
     const items = body.items || [];
-    const region = body.region || "uk";
+    const deliveryCost = body.delivery?.cost || 0;
 
-    // ---------------------------------------------
-    // 1. Build PayPal line items + calculate totals
-    // ---------------------------------------------
     let itemsTotal = 0;
+    let certificateFee = 0;
 
     const paypalItems = items.map(item => {
-      const lineTotal = item.price * item.qty;
+      const qty = item.quantity || 1;
+      const lineTotal = item.price * qty;
       itemsTotal += lineTotal;
 
+      if (item.certificate) {
+        certificateFee += 30 * qty;
+      }
+
       return {
-        name: `${item.title}${item.size ? " – " + item.size : ""}`,
+        name: item.title || "Artwork",
         unit_amount: {
           currency_code: "GBP",
           value: item.price.toFixed(2)
         },
-        quantity: item.qty.toString()
+        quantity: qty.toString()
       };
     });
 
-    // Delivery (NOT added as an item)
-    const delivery = DELIVERY_RATES[region] || 0;
+    const total = itemsTotal + deliveryCost + certificateFee;
 
-    // Certificate fee (NOT added as an item)
-    let certificateFee = 0;
-    items.forEach(item => {
-      if (item.certificate) {
-        certificateFee += 30 * item.qty;
-      }
-    });
-
-    // Final total
-    const total = itemsTotal + delivery + certificateFee;
-
-    // ---------------------------------------------
-    // 2. Create PayPal order (LIVE)
-    // ---------------------------------------------
     const paypalOrder = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
       method: "POST",
       headers: {
@@ -59,18 +41,13 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({
         intent: "CAPTURE",
-
         application_context: {
           brand_name: "Dave Marsh Artist",
           landing_page: "LOGIN",
           user_action: "PAY_NOW",
-
-          // ⭐ IMPORTANT FIX — PayPal will now append the token
           return_url: "https://davemarshartist.uk/thank-you?token=",
-
           cancel_url: "https://davemarshartist.uk/cancelled.html"
         },
-
         purchase_units: [
           {
             amount: {
@@ -78,7 +55,7 @@ exports.handler = async (event) => {
               value: total.toFixed(2),
               breakdown: {
                 item_total: { currency_code: "GBP", value: itemsTotal.toFixed(2) },
-                shipping: { currency_code: "GBP", value: delivery.toFixed(2) },
+                shipping: { currency_code: "GBP", value: deliveryCost.toFixed(2) },
                 handling: { currency_code: "GBP", value: certificateFee.toFixed(2) }
               }
             },
@@ -90,9 +67,6 @@ exports.handler = async (event) => {
     });
 
     const data = await paypalOrder.json();
-
-    console.log("PAYPAL RAW RESPONSE:", data);
-
     const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
 
     if (!approvalUrl) {

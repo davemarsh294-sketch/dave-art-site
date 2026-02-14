@@ -2,7 +2,7 @@ const fetch = require("node-fetch");
 
 exports.handler = async (event) => {
   try {
-    const { token } = JSON.parse(event.body);
+    const { token } = JSON.parse(event.body || "{}");
 
     if (!token) {
       return {
