@@ -785,12 +785,22 @@
     </div>
   </div>
 
- <div class="cart-footer">
-  <button id="go-to-checkout"
+  <!-- FIXED FOOTER WITH PAYMENT BUTTONS -->
+<div class="cart-footer">
+  <button onclick="startCheckout()"
     style="width:100%; padding:12px; background:black; color:white; border:none; margin-bottom:12px;
            letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
-    Checkout
+    Checkout with Card, GooglePay or ApplePay
   </button>
+
+  <button onclick="startPaypalCheckout()"
+    style="width:100%; padding:12px; background:#ffc439; color:#111; border:none;
+           letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
+    Pay with PayPal
+  </button>
+
+  <!-- ⭐ PayPal will render its UI here -->
+  <div id="paypal-button-container" style="margin-top: 12px;"></div>
 </div></div>
 
               
@@ -1184,8 +1194,6 @@ function renderNewsTeaser() {
    CART LOGIC
 -------------------------------------------------- */
 
-
-
 function saveCart() {
   localStorage.setItem("dm_cart", JSON.stringify(cart));
 }
@@ -1200,19 +1208,11 @@ function closeCart() {
 
 function addToCart(item) {
   const existing = cart.find(c => c.id === item.id);
-
   if (existing) {
-    existing.quantity += 1;
+    existing.qty += 1;
   } else {
-    cart.push({
-      id: item.id,
-      title: item.title,
-      price: Number(item.price),
-      quantity: 1,
-      certificate: false
-    });
+    cart.push(item);
   }
-
   saveCart();
   renderCart();
   openCart();
@@ -1228,29 +1228,25 @@ function changeQty(id, delta) {
   const item = cart.find(c => c.id === id);
   if (!item) return;
 
-  item.quantity += delta;
+  item.qty += delta;
 
-  if (item.quantity <= 0) {
+  if (item.qty <= 0) {
     cart = cart.filter(c => c.id !== id);
   }
 
   saveCart();
   renderCart();
 }
-
-document.querySelector("#go-to-checkout").onclick = () => {
-  window.location.href = "/checkout.html";
-};
-
 /* --------------------------------------------------
-   CLEAR CART AFTER PAYMENT SUCCESS
+   CLEAR CART AFTER PAYPAL SUCCESS
 -------------------------------------------------- */
-
 if (localStorage.getItem("cartCleared") === "true") {
 
-  localStorage.removeItem("dm_cart");
+  // Remove cart data
+  localStorage.removeItem("cart");
   localStorage.removeItem("cartCleared");
 
+  // Reset UI elements if they exist
   const emptyMessage = document.getElementById("empty-cart-message");
   const cartItems = document.getElementById("cart-items");
   const cartSummary = document.getElementById("cartSummary");
@@ -1261,13 +1257,14 @@ if (localStorage.getItem("cartCleared") === "true") {
   if (cartSummary) cartSummary.style.display = "none";
   if (cartCount) cartCount.textContent = "0";
 
-  cart.length = 0;
+  // Ensure the in‑memory cart array is empty
+  if (typeof cart !== "undefined") {
+    cart.length = 0;
+  }
 }
-
 /* --------------------------------------------------
    RENDER CART
 -------------------------------------------------- */
-
 function renderCart() {
   const container = document.getElementById("cart-items");
   const emptyMsg = document.getElementById("empty-cart-message");
@@ -1296,22 +1293,25 @@ function renderCart() {
     const row = document.createElement("div");
     row.className = "cart-item";
 
-    /* TITLE + PRICE */
     const header = document.createElement("div");
     header.className = "cart-item-header";
 
     const title = document.createElement("div");
     title.className = "cart-item-title";
-    title.textContent = item.title;
+    title.textContent = `${item.title} (${item.size})`;
     header.appendChild(title);
 
     const price = document.createElement("div");
-    price.textContent = "£" + (item.price * item.quantity).toFixed(2);
+    price.textContent = "£" + (item.price * item.qty).toFixed(2);
     header.appendChild(price);
 
     row.appendChild(header);
 
-    /* CERTIFICATE OPTION */
+    const meta = document.createElement("div");
+    meta.className = "cart-item-meta";
+    meta.textContent = item.specs + (item.edition ? " · " + item.edition : "");
+    row.appendChild(meta);
+
     const certWrapper = document.createElement("div");
     certWrapper.className = "cart-item-certificate";
 
@@ -1340,7 +1340,6 @@ function renderCart() {
     certWrapper.appendChild(certLabelEl);
     row.appendChild(certWrapper);
 
-    /* QUANTITY CONTROLS */
     const controls = document.createElement("div");
     controls.className = "cart-item-controls";
 
@@ -1352,7 +1351,7 @@ function renderCart() {
     minus.onclick = () => changeQty(item.id, -1);
 
     const qty = document.createElement("span");
-    qty.textContent = item.quantity;
+    qty.textContent = item.qty;
 
     const plus = document.createElement("button");
     plus.textContent = "+";
@@ -1376,7 +1375,7 @@ function renderCart() {
 
   const badge = document.getElementById("cartCountBadge");
   if (badge) {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
     badge.textContent = count;
     badge.style.opacity = "1";
   }
@@ -1387,9 +1386,8 @@ function renderCart() {
 /* --------------------------------------------------
    UPDATE TOTALS
 -------------------------------------------------- */
-
 function updateCartTotals() {
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   const certificateCost = cart.reduce((sum, item) => {
     return sum + (item.certificate ? 30 : 0);
@@ -1397,7 +1395,7 @@ function updateCartTotals() {
 
   const region = document.getElementById("regionSelect")?.value || "uk";
   const delivery = DELIVERY_RATES[region] ?? 0;
-localStorage.setItem("dm_delivery", delivery);
+
   const total = subtotal + delivery + certificateCost;
 
   cartTotal = total;
@@ -1408,8 +1406,78 @@ localStorage.setItem("dm_delivery", delivery);
   document.getElementById("cartTotal").textContent = "£" + total.toFixed(2);
 
   const emptyMessage = document.getElementById("empty-cart-message");
-  emptyMessage.style.display = cart.length === 0 ? "block" : "none";
+
+  if (cart.length === 0) {
+    emptyMessage.style.display = "block";
+  } else {
+    emptyMessage.style.display = "none";
+  }
 }
+
+/* --------------------------------------------------
+   STRIPE CHECKOUT
+-------------------------------------------------- */
+
+
+async function startCheckout() {
+
+  // ⭐ Make sure dm_cart is up to date
+  saveCart();
+
+  const cartItems = JSON.parse(localStorage.getItem("dm_cart")) || [];
+console.log("DIAGNOSTIC — cartItems being sent to Stripe:", cartItems);
+  const response = await fetch('/.netlify/functions/create-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      items: cartItems,
+      region: document.getElementById('regionSelect').value
+    })
+  });
+
+  const data = await response.json();
+  window.location = data.url;
+}
+
+/* --------------------------------------------------
+   PAYPAL CHECKOUT
+-------------------------------------------------- */
+
+async function startPaypalCheckout() {
+  // Make sure cart is saved
+  saveCart();
+
+  const cartItems = JSON.parse(localStorage.getItem("dm_cart")) || [];
+
+  const description = cartItems
+    .map(item => {
+      const title = item.title || "Artwork";
+      const size = item.size ? ` – ${item.size}` : "";
+      return `${title}${size}`;
+    })
+    .join(", ");
+
+  const total = cartTotal;
+
+  // ⭐ THIS IS THE CORRECT PAYPAL PAYLOAD
+  const response = await fetch('/.netlify/functions/create-paypal-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      items: cartItems,
+      region: document.getElementById('regionSelect').value
+    })
+  });
+
+  const data = await response.json();
+
+  if (data.url) {
+    window.location = data.url; // ⭐ Redirect to PayPal
+  } else {
+    console.error("PayPal error:", data);
+  }
+}
+
 
 /* --------------------------------------------------
     VIGNETTE

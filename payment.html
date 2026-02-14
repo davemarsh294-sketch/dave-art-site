@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    #payment-summary-row {
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      padding: 16px 0;
+      margin-bottom: 24px;
+    }
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .summary-line.total {
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      margin-top: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    #stripe-button {
+      background: #000;
+      color: #fff;
+    }
+    #paypal-button {
+      background: #ffc439;
+      color: #111;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Payment</h1>
+
+  <section id="payment-summary-row">
+    <div id="payment-summary"></div>
+  </section>
+
+  <button id="stripe-button" onclick="startStripeCheckout()">
+    Pay with Card, Apple Pay or Google Pay
+  </button>
+
+  <button id="paypal-button" onclick="startPaypalCheckout()">
+    Pay with PayPal
+  </button>
+
+  <script src="payment.js"></script>
+</body>
+</html>
