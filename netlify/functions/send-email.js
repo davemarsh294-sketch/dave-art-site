@@ -56,15 +56,17 @@ export async function handler(event) {
       <p><strong>£${total.toFixed(2)}</strong></p>
     `;
 
+    // VENDOR EMAIL
     await resend.emails.send({
-      from: "Orders <orders@yourdomain.com>",
-      to: "your-email@example.com",
+      from: "Orders <orders@davemarshartist.uk>",
+      to: "davemarsh294@gmail.com",   // ← replace this
       subject: `New Order — ${order.orderId}`,
       html
     });
 
+    // CUSTOMER EMAIL
     await resend.emails.send({
-      from: "Your Shop <orders@yourdomain.com>",
+      from: "Orders <orders@davemarshartist.uk>",
       to: order.customer.email,
       subject: `Your Order Confirmation — ${order.orderId}`,
       html
