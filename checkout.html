@@ -4,98 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout</title>
-
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-      line-height: 1.6;
-    }
-
-    h1, h2 {
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      font-size: 18px;
-      margin-bottom: 12px;
-    }
-
-    label {
-      display: block;
-      margin-top: 12px;
-      font-size: 14px;
-      letter-spacing: 0.03em;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    #order-summary div {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    #confirm-details {
-      width: 100%;
-      padding: 12px;
-      background: black;
-      color: white;
-      border: none;
-      margin-top: 20px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-size: 13px;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <h1>Checkout</h1>
+  <main class="checkout-container">
 
-  <!-- ⭐ ORDER SUMMARY (auto-filled by JS) -->
-  <section id="order-summary"></section>
+    <!-- --------------------------------------------------
+         ORDER SUMMARY (THIS WAS THE MISSING PIECE)
+    -------------------------------------------------- -->
+    <section class="checkout-summary">
 
-  <h2>Your Details</h2>
+      <h2>Your Order</h2>
 
-  <!-- ⭐ CONTACT FORM -->
-  <form id="checkout-form">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span id="subtotal-line">£0.00</span>
+      </div>
 
-    <label>Name</label>
-    <input id="name" required>
+      <div class="summary-row">
+        <span>Delivery</span>
+        <span id="delivery-line">£0.00</span>
+      </div>
 
-    <label>Email</label>
-    <input id="email" type="email" required>
+      <div class="summary-row">
+        <span>Certificates</span>
+        <span id="certificate-line">£0.00</span>
+      </div>
 
-    <label>Phone</label>
-    <input id="phone">
+      <div class="summary-row total">
+        <span>Total</span>
+        <span id="total-line">£0.00</span>
+      </div>
 
-    <label>Address Line 1</label>
-    <input id="address1" required>
+    </section>
 
-    <label>Address Line 2</label>
-    <input id="address2">
 
-    <label>Town / City</label>
-    <input id="city" required>
+    <!-- --------------------------------------------------
+         CHECKOUT FORM
+    -------------------------------------------------- -->
+    <section class="checkout-form">
 
-    <label>Country</label>
-    <input id="country" required>
+      <h2>Your Details</h2>
 
-    <label>Post / ZIP Code</label>
-    <input id="postcode" required>
+      <form id="checkoutForm">
 
-    <button id="confirm-details" type="button">Confirm & Continue</button>
-  </form>
+        <label>Name</label>
+        <input id="name" type="text" required>
 
-  <script src="checkout.js"></script>
-</body>
-</html>
+        <label>Email</label>
+        <input id="email" type="email" required>
+
+        <label>Phone</label>
+        <input id="phone" type="text">
+
+        <label>Address Line 1</label>
+        <input id="address1" type="text" required>
+
+        <label>Address Line 2</label>
+        <input id="address2" type="text">
+
+        <label>City</label>
+        <input id="city" type="text" required>
+
+        <label>Country</label>
+        <input id="country" type="text" required>
+
+        <label>Postcode</label>
+        <input id="postcode" type="text" required>
+
+        <label>Region</label>
