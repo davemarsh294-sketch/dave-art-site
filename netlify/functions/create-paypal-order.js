@@ -1,10 +1,20 @@
-// netlify/functions/create-paypal-order.js
-
 import fetch from "node-fetch";
 
 export async function handler(event) {
   try {
     const order = JSON.parse(event.body);
+
+    const itemTotal = order.items.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
+    }, 0);
+
+    const deliveryTotal = order.delivery.cost || 0;
+
+    const certificateTotal = order.items.reduce((sum, item) => {
+      return sum + (item.certificate ? 30 * item.quantity : 0);
+    }, 0);
+
+    const grandTotal = itemTotal + deliveryTotal + certificateTotal;
 
     const auth = Buffer.from(
       process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_SECRET
@@ -24,15 +34,13 @@ export async function handler(event) {
             {
               amount: {
                 currency_code: "GBP",
-                value: order.total.toFixed(2)
+                value: grandTotal.toFixed(2)
               }
             }
           ],
           application_context: {
             brand_name: "Dave Marsh Artist",
             landing_page: "NO_PREFERENCE",
-
-            // ⭐ Your domain
             return_url: "https://davemarshartist.uk/thank-you.html",
             cancel_url: "https://davemarshartist.uk/checkout.html"
           }
