@@ -1,118 +1,116 @@
 /* --------------------------------------------------
-   CHECKOUT — FINAL VERSION WITH DELIVERY + COUNTRY
+   LOAD CART + DELIVERY
 -------------------------------------------------- */
 
-// Load cart from localStorage
 const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
-
-// Load delivery cost saved by cart drawer
 const deliveryCost = Number(localStorage.getItem("dm_delivery")) || 0;
 
 /* --------------------------------------------------
-   RENDER ORDER SUMMARY
+   BUILD ORDER DATA
 -------------------------------------------------- */
 
-function renderOrderSummary() {
-  const container = document.querySelector("#order-summary");
+function buildOrderData() {
+  const items = JSON.parse(localStorage.getItem("dm_cart")) || [];
+  const deliveryCost = Number(localStorage.getItem("dm_delivery")) || 0;
 
-  if (cart.length === 0) {
-    container.innerHTML = "<p>Your cart is empty.</p>";
-    return;
-  }
+  // Subtotal
+  const subtotal = items.reduce((sum, item) => {
+    return sum + item.price * item.quantity;
+  }, 0);
 
-  let subtotal = 0;
-  let certificateCost = 0;
+  // Certificate cost
+  const certificateCost = items.reduce((sum, item) => {
+    return sum + (item.certificate ? 30 : 0);
+  }, 0);
 
-  let html = "<h2>Order Summary</h2>";
+  // Delivery region
+  const region = document.getElementById("region")?.value || "uk";
 
-  /* ------------------------------
-     ITEM LINES
-  ------------------------------ */
-  cart.forEach(item => {
-    const lineTotal = item.price * item.quantity;
-    subtotal += lineTotal;
-
-    if (item.certificate) certificateCost += 30;
-
-    html += `
-      <div class="checkout-line">
-        <span>${item.title} × ${item.quantity}</span>
-        <span>£${lineTotal.toFixed(2)}</span>
-      </div>
-    `;
-  });
-
-  /* ------------------------------
-     SUMMARY LINES
-  ------------------------------ */
-  html += `
-    <div class="checkout-line">
-      <strong>Subtotal</strong>
-      <strong>£${subtotal.toFixed(2)}</strong>
-    </div>
-
-    <div class="checkout-line">
-      <strong>Certificates</strong>
-      <strong>£${certificateCost.toFixed(2)}</strong>
-    </div>
-
-    <div class="checkout-line">
-      <strong>Delivery</strong>
-      <strong>£${deliveryCost.toFixed(2)}</strong>
-    </div>
-
-    <div class="checkout-line total-strong" id="total-line"></div>
-  `;
-
-  container.innerHTML = html;
-
-  updateTotal(subtotal, certificateCost, deliveryCost);
-}
-
-/* --------------------------------------------------
-   CALCULATE TOTAL
--------------------------------------------------- */
-
-function updateTotal(subtotal, certificateCost, deliveryCost) {
-  const total = subtotal + certificateCost + deliveryCost;
-
-  document.querySelector("#total-line").innerHTML =
-    `<strong>Total</strong><strong>£${total.toFixed(2)}</strong>`;
-}
-
-/* --------------------------------------------------
-   CONFIRM DETAILS → SAVE ORDER → GO TO PAYMENT
--------------------------------------------------- */
-
-document.querySelector("#confirm-details").onclick = () => {
-
+  // Build order object
   const orderData = {
-    items: cart,
+    customer: {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      address1: document.getElementById("address1").value,
+      address2: document.getElementById("address2").value,
+      city: document.getElementById("city").value,
+      country: document.getElementById("country").value,
+      postcode: document.getElementById("postcode").value
+    },
+
+    items: items,
+
     delivery: {
-      region: "Auto",
+      region: region,
       cost: deliveryCost
     },
-    customer: {
-      name: document.querySelector("#name").value,
-      email: document.querySelector("#email").value,
-      phone: document.querySelector("#phone").value,
-      address1: document.querySelector("#address1").value,
-      address2: document.querySelector("#address2").value,
-      city: document.querySelector("#city").value,
-      country: document.querySelector("#country").value,
-      postcode: document.querySelector("#postcode").value
-    }
+
+    // ⭐ FINAL TOTAL (STEP 3 COMPLETE)
+    total: subtotal + certificateCost + deliveryCost
   };
 
-  // Save for payment.js
+  // Save for thankyou page + email function
   localStorage.setItem("pendingOrder", JSON.stringify(orderData));
 
-  // Move to payment page
-  window.location.href = "/payment.html";
-};
+  return orderData;
+}
 
 /* --------------------------------------------------
-   INIT
+   STRIPE CHECKOUT
 -------------------------------------------------- */
 
-renderOrderSummary();
+async function startStripeCheckout() {
+  const orderData = buildOrderData();
+
+  const response = await fetch("/.netlify/functions/create-checkout", {
+    method: "POST",
+    body: JSON.stringify(orderData)
+  });
+
+  const data = await response.json();
+
+  if (data.url) {
+    window.location.href = data.url;
+  } else {
+    alert("Stripe checkout failed.");
+  }
+}
+
+/* --------------------------------------------------
+   PAYPAL CHECKOUT
+-------------------------------------------------- */
+
+async function startPayPalCheckout() {
+  const orderData = buildOrderData();
+
+  const response = await fetch("/.netlify/functions/create-paypal-order", {
+    method: "POST",
+    body: JSON.stringify(orderData)
+  });
+
+  const data = await response.json();
+
+  if (data.id) {
+    window.location.href = data.approvalUrl;
+  } else {
+    alert("PayPal checkout failed.");
+  }
+}
+
+/* --------------------------------------------------
+   BUTTON HOOKS
+-------------------------------------------------- */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const stripeBtn = document.getElementById("stripeButton");
+  const paypalBtn = document.getElementById("paypalButton");
+
+  if (stripeBtn) {
+    stripeBtn.addEventListener("click", startStripeCheckout);
+  }
+
+  if (paypalBtn) {
+    paypalBtn.addEventListener("click", startPayPalCheckout);
+  }
+});
