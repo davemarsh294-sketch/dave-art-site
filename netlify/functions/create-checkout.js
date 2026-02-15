@@ -8,19 +8,15 @@ export async function handler(event) {
   try {
     const order = JSON.parse(event.body);
 
-    // Build Stripe line items from your cart
     const lineItems = order.items.map(item => ({
       price_data: {
         currency: "gbp",
-        product_data: {
-          name: item.title
-        },
+        product_data: { name: item.title },
         unit_amount: Math.round(item.price * 100)
       },
       quantity: item.quantity
     }));
 
-    // Add certificate fee if needed
     const certificateFee = order.items.reduce((sum, item) => {
       return sum + (item.certificate ? 30 * item.quantity : 0);
     }, 0);
@@ -36,7 +32,6 @@ export async function handler(event) {
       });
     }
 
-    // Add delivery cost
     if (order.delivery.cost > 0) {
       lineItems.push({
         price_data: {
@@ -48,11 +43,12 @@ export async function handler(event) {
       });
     }
 
-    // ⭐ CRITICAL: Redirect back to YOUR thank-you page
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
       line_items: lineItems,
+
+      // ⭐ Your domain
       success_url: "https://davemarshartist.uk/thank-you.html",
       cancel_url: "https://davemarshartist.uk/checkout.html"
     });
