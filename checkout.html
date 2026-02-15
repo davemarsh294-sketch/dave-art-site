@@ -54,6 +54,19 @@
       font-size: 13px;
       cursor: pointer;
     }
+
+    .payment-method {
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid #ccc;
+    }
+
+    .payment-method label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 
@@ -93,7 +106,26 @@
     <label>Post / ZIP Code</label>
     <input id="postcode" required>
 
-    <button id="confirm-details" type="button">Confirm & Continue</button>
+    <!-- ⭐ PAYMENT METHOD SELECTION -->
+    <div class="payment-method">
+      <h2>Payment Method</h2>
+
+      <label>
+        <input type="radio" name="method" value="stripe" checked
+               onclick="window.checkoutMethod='stripe'">
+        Pay with Card (Stripe)
+      </label>
+
+      <label>
+        <input type="radio" name="method" value="paypal"
+               onclick="window.checkoutMethod='paypal'">
+        Pay with PayPal
+      </label>
+    </div>
+
+    <button id="confirm-details" type="button" onclick="startCheckout()">
+      Confirm & Continue
+    </button>
   </form>
 
   <script src="checkout.js"></script>
