@@ -1,15 +1,8 @@
 /* --------------------------------------------------
-   LOAD CART + DELIVERY
+   LOAD CART + SHOW TOTALS ON CHECKOUT PAGE
 -------------------------------------------------- */
 
-const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
-const deliveryCost = Number(localStorage.getItem("dm_delivery")) || 0;
-
-/* --------------------------------------------------
-   BUILD ORDER DATA
--------------------------------------------------- */
-
-function buildOrderData() {
+function loadCheckoutTotals() {
   const items = JSON.parse(localStorage.getItem("dm_cart")) || [];
   const deliveryCost = Number(localStorage.getItem("dm_delivery")) || 0;
 
@@ -23,10 +16,28 @@ function buildOrderData() {
     return sum + (item.certificate ? 30 : 0);
   }, 0);
 
-  // Delivery region
+  // Final total
+  const total = subtotal + certificateCost + deliveryCost;
+
+  // Update checkout page
+  document.getElementById("subtotal-line").textContent = "£" + subtotal.toFixed(2);
+  document.getElementById("delivery-line").textContent = "£" + deliveryCost.toFixed(2);
+  document.getElementById("certificate-line").textContent = "£" + certificateCost.toFixed(2);
+  document.getElementById("total-line").textContent = "£" + total.toFixed(2);
+}
+
+/* --------------------------------------------------
+   BUILD ORDER DATA
+-------------------------------------------------- */
+
+function buildOrderData() {
+  const items = JSON.parse(localStorage.getItem("dm_cart")) || [];
+  const deliveryCost = Number(localStorage.getItem("dm_delivery")) || 0;
+
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const certificateCost = items.reduce((sum, item) => sum + (item.certificate ? 30 : 0), 0);
   const region = document.getElementById("region")?.value || "uk";
 
-  // Build order object
   const orderData = {
     customer: {
       name: document.getElementById("name").value,
@@ -46,11 +57,9 @@ function buildOrderData() {
       cost: deliveryCost
     },
 
-    // ⭐ FINAL TOTAL (STEP 3 COMPLETE)
     total: subtotal + certificateCost + deliveryCost
   };
 
-  // Save for thankyou page + email function
   localStorage.setItem("pendingOrder", JSON.stringify(orderData));
 
   return orderData;
@@ -91,7 +100,7 @@ async function startPayPalCheckout() {
 
   const data = await response.json();
 
-  if (data.id) {
+  if (data.approvalUrl) {
     window.location.href = data.approvalUrl;
   } else {
     alert("PayPal checkout failed.");
@@ -99,18 +108,15 @@ async function startPayPalCheckout() {
 }
 
 /* --------------------------------------------------
-   BUTTON HOOKS
+   INIT ON PAGE LOAD
 -------------------------------------------------- */
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadCheckoutTotals();
+
   const stripeBtn = document.getElementById("stripeButton");
   const paypalBtn = document.getElementById("paypalButton");
 
-  if (stripeBtn) {
-    stripeBtn.addEventListener("click", startStripeCheckout);
-  }
-
-  if (paypalBtn) {
-    paypalBtn.addEventListener("click", startPayPalCheckout);
-  }
+  if (stripeBtn) stripeBtn.addEventListener("click", startStripeCheckout);
+  if (paypalBtn) paypalBtn.addEventListener("click", startPayPalCheckout);
 });
