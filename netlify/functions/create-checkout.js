@@ -22,7 +22,7 @@ exports.handler = async (event) => {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      success_url: "https://davemarshartist.uk/thank-you?session_id={CHECKOUT_SESSION_ID}",
+      success_url: "https://davemarshartist.uk/thank-you.html?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://davemarshartist.uk/cancelled.html",
       line_items: [
         {

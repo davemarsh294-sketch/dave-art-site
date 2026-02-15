@@ -45,8 +45,6 @@ exports.handler = async (event) => {
           brand_name: "Dave Marsh Artist",
           landing_page: "LOGIN",
           user_action: "PAY_NOW",
-
-          // ⭐ FIXED — use the actual file name so Netlify serves it correctly
           return_url: "https://davemarshartist.uk/thank-you.html",
           cancel_url: "https://davemarshartist.uk/cancelled.html"
         },
@@ -70,8 +68,6 @@ exports.handler = async (event) => {
 
     const data = await paypalOrder.json();
 
-    console.log("PayPal raw response:", JSON.stringify(data, null, 2));
-
     if (!paypalOrder.ok) {
       return {
         statusCode: 500,
@@ -92,8 +88,6 @@ exports.handler = async (event) => {
 
   } catch (err) {
     console.error("PayPal error:", err);
-    console.error("PayPal full error details:", JSON.stringify(err, null, 2));
-
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
