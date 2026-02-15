@@ -1,118 +1,68 @@
 /* --------------------------------------------------
-   CHECKOUT — FINAL VERSION WITH DELIVERY + COUNTRY
+   CHECKOUT — SAVE ORDER + REDIRECT TO PAYMENT
 -------------------------------------------------- */
 
-// Load cart from localStorage
-const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
+async function startCheckout() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address1 = document.getElementById("address1").value.trim();
+  const address2 = document.getElementById("address2").value.trim();
+  const city = document.getElementById("city").value.trim();
+  const country = document.getElementById("country").value.trim();
+  const postcode = document.getElementById("postcode").value.trim();
 
-// Load delivery cost saved by cart drawer
-const deliveryCost = Number(localStorage.getItem("dm_delivery")) || 0;
+  const deliveryRegion = document.getElementById("deliveryRegion").value;
+  const deliveryCost = parseFloat(document.getElementById("deliveryCost").value);
 
-/* --------------------------------------------------
-   RENDER ORDER SUMMARY
--------------------------------------------------- */
+  const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
 
-function renderOrderSummary() {
-  const container = document.querySelector("#order-summary");
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const certificateFee = cart.reduce((sum, item) => sum + (item.certificate ? 30 * item.quantity : 0), 0);
+  const total = subtotal + certificateFee + deliveryCost;
 
-  if (cart.length === 0) {
-    container.innerHTML = "<p>Your cart is empty.</p>";
-    return;
-  }
-
-  let subtotal = 0;
-  let certificateCost = 0;
-
-  let html = "<h2>Order Summary</h2>";
-
-  /* ------------------------------
-     ITEM LINES
-  ------------------------------ */
-  cart.forEach(item => {
-    const lineTotal = item.price * item.quantity;
-    subtotal += lineTotal;
-
-    if (item.certificate) certificateCost += 30;
-
-    html += `
-      <div class="checkout-line">
-        <span>${item.title} × ${item.quantity}</span>
-        <span>£${lineTotal.toFixed(2)}</span>
-      </div>
-    `;
-  });
-
-  /* ------------------------------
-     SUMMARY LINES
-  ------------------------------ */
-  html += `
-    <div class="checkout-line">
-      <strong>Subtotal</strong>
-      <strong>£${subtotal.toFixed(2)}</strong>
-    </div>
-
-    <div class="checkout-line">
-      <strong>Certificates</strong>
-      <strong>£${certificateCost.toFixed(2)}</strong>
-    </div>
-
-    <div class="checkout-line">
-      <strong>Delivery</strong>
-      <strong>£${deliveryCost.toFixed(2)}</strong>
-    </div>
-
-    <div class="checkout-line total-strong" id="total-line"></div>
-  `;
-
-  container.innerHTML = html;
-
-  updateTotal(subtotal, certificateCost, deliveryCost);
-}
-
-/* --------------------------------------------------
-   CALCULATE TOTAL
--------------------------------------------------- */
-
-function updateTotal(subtotal, certificateCost, deliveryCost) {
-  const total = subtotal + certificateCost + deliveryCost;
-
-  document.querySelector("#total-line").innerHTML =
-    `<strong>Total</strong><strong>£${total.toFixed(2)}</strong>`;
-}
-
-/* --------------------------------------------------
-   CONFIRM DETAILS → SAVE ORDER → GO TO PAYMENT
--------------------------------------------------- */
-
-document.querySelector("#confirm-details").onclick = () => {
-
-  const orderData = {
+  const order = {
+    customer: {
+      name,
+      email,
+      phone,
+      address1,
+      address2,
+      city,
+      country,
+      postcode
+    },
     items: cart,
     delivery: {
-      region: "Auto",
+      region: deliveryRegion,
       cost: deliveryCost
     },
-    customer: {
-      name: document.querySelector("#name").value,
-      email: document.querySelector("#email").value,
-      phone: document.querySelector("#phone").value,
-      address1: document.querySelector("#address1").value,
-      address2: document.querySelector("#address2").value,
-      city: document.querySelector("#city").value,
-      country: document.querySelector("#country").value,
-      postcode: document.querySelector("#postcode").value
-    }
+    total
   };
 
-  // Save for payment.js
-  localStorage.setItem("pendingOrder", JSON.stringify(orderData));
+  // ⭐ FIX: Use sessionStorage so Stripe redirect keeps the data
+  sessionStorage.setItem("pendingOrder", JSON.stringify(order));
 
-  // Move to payment page
-  window.location.href = "/payment.html";
-};
+  // ⭐ Send to Stripe or PayPal depending on button clicked
+  if (window.checkoutMethod === "stripe") {
+    const response = await fetch("/.netlify/functions/create-checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order)
+    });
 
-/* --------------------------------------------------
-   INIT
--------------------------------------------------- */
+    const data = await response.json();
+    window.location.href = data.url;
+  }
 
-renderOrderSummary();
+  if (window.checkoutMethod === "paypal") {
+    const response = await fetch("/.netlify/functions/create-paypal-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order)
+    });
+
+    const data = await response.json();
+    window.location.href = data.url;
+  }
+}
