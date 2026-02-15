@@ -74,12 +74,10 @@
 
   <h1>Checkout</h1>
 
-  <!-- ⭐ ORDER SUMMARY (auto-filled by JS) -->
   <section id="order-summary"></section>
 
   <h2>Your Details</h2>
 
-  <!-- ⭐ CONTACT FORM -->
   <form id="checkout-form">
 
     <label>Name</label>
@@ -106,7 +104,10 @@
     <label>Post / ZIP Code</label>
     <input id="postcode" required>
 
-    <!-- ⭐ PAYMENT METHOD SELECTION -->
+    <!-- ⭐ REQUIRED HIDDEN FIELDS (these were missing) -->
+    <input type="hidden" id="deliveryRegion" value="UK">
+    <input type="hidden" id="deliveryCost" value="0">
+
     <div class="payment-method">
       <h2>Payment Method</h2>
 
