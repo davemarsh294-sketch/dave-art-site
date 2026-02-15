@@ -1,44 +1,60 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+// netlify/functions/create-checkout.js
 
-exports.handler = async (event) => {
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export async function handler(event) {
   try {
-    const order = JSON.parse(event.body || "{}");
-    const items = order.items || [];
-    const deliveryCost = order.delivery?.cost || 0;
+    const order = JSON.parse(event.body);
 
-    let subtotal = 0;
-    let certificateFee = 0;
+    // Build Stripe line items from your cart
+    const lineItems = order.items.map(item => ({
+      price_data: {
+        currency: "gbp",
+        product_data: {
+          name: item.title
+        },
+        unit_amount: Math.round(item.price * 100)
+      },
+      quantity: item.quantity
+    }));
 
-    items.forEach(item => {
-      const qty = item.quantity || 1;
-      subtotal += item.price * qty;
-      if (item.certificate) {
-        certificateFee += 30 * qty;
-      }
-    });
+    // Add certificate fee if needed
+    const certificateFee = order.items.reduce((sum, item) => {
+      return sum + (item.certificate ? 30 * item.quantity : 0);
+    }, 0);
 
-    const total = subtotal + certificateFee + deliveryCost;
+    if (certificateFee > 0) {
+      lineItems.push({
+        price_data: {
+          currency: "gbp",
+          product_data: { name: "Certificate of Authenticity" },
+          unit_amount: certificateFee * 100
+        },
+        quantity: 1
+      });
+    }
 
+    // Add delivery cost
+    if (order.delivery.cost > 0) {
+      lineItems.push({
+        price_data: {
+          currency: "gbp",
+          product_data: { name: `Delivery (${order.delivery.region})` },
+          unit_amount: Math.round(order.delivery.cost * 100)
+        },
+        quantity: 1
+      });
+    }
+
+    // ⭐ CRITICAL: Redirect back to YOUR thank-you page
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
       payment_method_types: ["card"],
-      success_url: "https://davemarshartist.uk/thank-you.html?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "https://davemarshartist.uk/cancelled.html",
-      line_items: [
-        {
-          price_data: {
-            currency: "gbp",
-            product_data: { name: "Artwork Order" },
-            unit_amount: Math.round(total * 100)
-          },
-          quantity: 1
-        }
-      ],
-      metadata: {
-        customer_name: order.customer?.name || "",
-        customer_email: order.customer?.email || "",
-        order_total: total.toFixed(2)
-      }
+      mode: "payment",
+      line_items: lineItems,
+      success_url: "https://YOURDOMAIN/thank-you.html",
+      cancel_url: "https://YOURDOMAIN/checkout.html"
     });
 
     return {
@@ -47,10 +63,9 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    console.error("STRIPE FUNCTION ERROR:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
     };
   }
-};
+}
