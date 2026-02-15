@@ -3,6 +3,7 @@
 -------------------------------------------------- */
 
 async function startCheckout() {
+  // ⭐ Read customer details
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const phone = document.getElementById("phone").value.trim();
@@ -12,15 +13,19 @@ async function startCheckout() {
   const country = document.getElementById("country").value.trim();
   const postcode = document.getElementById("postcode").value.trim();
 
-  const deliveryRegion = document.getElementById("deliveryRegion").value;
-  const deliveryCost = parseFloat(document.getElementById("deliveryCost").value);
+  // ⭐ Delivery region + cost (already set by your summary script)
+  const deliveryRegion = document.getElementById("deliveryRegion")?.value || "UK";
+  const deliveryCost = parseFloat(document.getElementById("deliveryCost")?.value || 0);
 
+  // ⭐ Cart from localStorage
   const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
 
+  // ⭐ Totals
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const certificateFee = cart.reduce((sum, item) => sum + (item.certificate ? 30 * item.quantity : 0), 0);
   const total = subtotal + certificateFee + deliveryCost;
 
+  // ⭐ Build order object
   const order = {
     customer: {
       name,
@@ -40,10 +45,16 @@ async function startCheckout() {
     total
   };
 
-  // ⭐ FIX: Use sessionStorage so Stripe redirect keeps the data
+  // ⭐ FIX: Use sessionStorage so Stripe redirect keeps the order
   sessionStorage.setItem("pendingOrder", JSON.stringify(order));
 
-  // ⭐ Send to Stripe or PayPal depending on button clicked
+  // ⭐ Ensure a payment method is selected
+  if (!window.checkoutMethod) {
+    alert("Please select a payment method.");
+    return;
+  }
+
+  // ⭐ STRIPE CHECKOUT
   if (window.checkoutMethod === "stripe") {
     const response = await fetch("/.netlify/functions/create-checkout", {
       method: "POST",
@@ -52,9 +63,15 @@ async function startCheckout() {
     });
 
     const data = await response.json();
-    window.location.href = data.url;
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("There was an error starting Stripe checkout.");
+    }
   }
 
+  // ⭐ PAYPAL CHECKOUT
   if (window.checkoutMethod === "paypal") {
     const response = await fetch("/.netlify/functions/create-paypal-order", {
       method: "POST",
@@ -63,6 +80,11 @@ async function startCheckout() {
     });
 
     const data = await response.json();
-    window.location.href = data.url;
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("There was an error starting PayPal checkout.");
+    }
   }
 }
