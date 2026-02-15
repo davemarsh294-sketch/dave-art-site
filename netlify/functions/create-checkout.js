@@ -52,21 +52,10 @@ export async function handler(event) {
       });
     }
 
-    // ⭐ Stripe Checkout Session (Link fully disabled)
+    // ⭐ Stripe Checkout Session (clean + stable)
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-
-      payment_method_types: ["card"],
-
-      payment_method_options: {
-        card: {
-          setup_future_usage: null
-        },
-        link: {
-          enabled: false
-        }
-      },
-
+      payment_method_types: ["card"], // card only
       line_items: lineItems,
       success_url: "https://davemarshartist.uk/thank-you.html",
       cancel_url: "https://davemarshartist.uk/checkout.html"
