@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+// netlify/functions/create-paypal-order.js
 
 export async function handler(event) {
   try {
@@ -8,13 +8,13 @@ export async function handler(event) {
       return sum + item.price * item.quantity;
     }, 0);
 
-    const deliveryTotal = order.delivery.cost || 0;
+    const deliveryTotal = Number(order.delivery.cost) || 0;
 
     const certificateTotal = order.items.reduce((sum, item) => {
       return sum + (item.certificate ? 30 * item.quantity : 0);
     }, 0);
 
-    const grandTotal = itemTotal + deliveryTotal + certificateTotal;
+    const grandTotal = Number(itemTotal + deliveryTotal + certificateTotal);
 
     const auth = Buffer.from(
       process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_SECRET
