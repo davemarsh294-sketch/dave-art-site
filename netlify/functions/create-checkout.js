@@ -53,8 +53,8 @@ export async function handler(event) {
       payment_method_types: ["card"],
       mode: "payment",
       line_items: lineItems,
-      success_url: "https://YOURDOMAIN/thank-you.html",
-      cancel_url: "https://YOURDOMAIN/checkout.html"
+      success_url: "https://davemarshartist.uk/thank-you.html",
+      cancel_url: "https://davemarshartist.uk/checkout.html"
     });
 
     return {
