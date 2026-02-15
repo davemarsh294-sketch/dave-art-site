@@ -23,14 +23,15 @@
 
   <div id="status">Processing…</div>
 
+  <!-- ⭐ PAYPAL CAPTURE LOGIC -->
   <script>
     async function capturePayment() {
       const params = new URLSearchParams(window.location.search);
       const token = params.get("token");
 
+      // ⭐ If this is a Stripe order, skip PayPal capture
       if (!token) {
-        document.getElementById("status").innerText =
-          "No PayPal token found. If you completed payment, it may still be processing.";
+        console.log("Stripe order detected — skipping PayPal capture.");
         return;
       }
 
@@ -47,11 +48,10 @@
           document.getElementById("status").innerText =
             "Payment confirmed — your order is complete.";
 
-          // Clear cart
           localStorage.removeItem("dm_cart");
         } else {
           document.getElementById("status").innerText =
-            "Payment approved but not captured. Please check your PayPal account.";
+            "Payment approved but not captured.";
         }
 
       } catch (err) {
@@ -61,6 +61,12 @@
     }
 
     capturePayment();
+  </script>
+
+  <!-- ⭐ EMAIL CONFIRMATION TRIGGER -->
+  <script src="checkout-success.js"></script>
+  <script>
+    sendOrderConfirmation();
   </script>
 
 </body>
