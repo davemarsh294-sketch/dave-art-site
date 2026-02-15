@@ -91,13 +91,13 @@
     <input id="email" type="email" required>
 
     <label>Phone</label>
-    <input id="phone">
+    <input id="phone" required>
 
     <label>Address Line 1</label>
     <input id="address1" required>
 
     <label>Address Line 2</label>
-    <input id="address2">
+    <input id="address2"> <!-- optional -->
 
     <label>Town / City</label>
     <input id="city" required>
@@ -108,7 +108,7 @@
     <label>Post / ZIP Code</label>
     <input id="postcode" required>
 
-    <!-- Required hidden fields for checkout.js -->
+    <!-- Hidden fields for delivery -->
     <input type="hidden" id="deliveryRegion" value="UK">
     <input type="hidden" id="deliveryCost" value="0">
 
@@ -128,10 +128,10 @@
 
   </form>
 
-  <!-- ⭐ NEW: Delivery + summary script -->
+  <!-- Delivery + summary logic -->
   <script src="checkout-summary.js"></script>
 
-  <!-- Existing checkout logic -->
+  <!-- Main checkout logic -->
   <script src="checkout.js"></script>
 
 </body>
