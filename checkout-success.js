@@ -5,7 +5,6 @@
 async function sendConfirmation() {
   const statusEl = document.getElementById("status");
 
-  // Get order from sessionStorage
   const orderJSON = sessionStorage.getItem("pendingOrder");
 
   if (!orderJSON) {
@@ -15,7 +14,6 @@ async function sendConfirmation() {
 
   const order = JSON.parse(orderJSON);
 
-  // Send to Netlify function
   try {
     const response = await fetch("/.netlify/functions/send-confirmation", {
       method: "POST",
@@ -34,7 +32,6 @@ async function sendConfirmation() {
     statusEl.textContent = "Order complete, but email could not be sent.";
   }
 
-  // Clear cart + pending order
   localStorage.removeItem("dm_cart");
   sessionStorage.removeItem("pendingOrder");
 }
