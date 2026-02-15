@@ -1,5 +1,3 @@
-// netlify/functions/create-checkout.js
-
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -17,21 +15,23 @@ export async function handler(event) {
       quantity: item.quantity
     }));
 
-    const certificateFee = order.items.reduce((sum, item) => {
+    // Add certificate fees
+    const certificateTotal = order.items.reduce((sum, item) => {
       return sum + (item.certificate ? 30 * item.quantity : 0);
     }, 0);
 
-    if (certificateFee > 0) {
+    if (certificateTotal > 0) {
       lineItems.push({
         price_data: {
           currency: "gbp",
           product_data: { name: "Certificate of Authenticity" },
-          unit_amount: certificateFee * 100
+          unit_amount: certificateTotal * 100
         },
         quantity: 1
       });
     }
 
+    // ⭐ ADD DELIVERY AS A LINE ITEM
     if (order.delivery.cost > 0) {
       lineItems.push({
         price_data: {
@@ -47,8 +47,6 @@ export async function handler(event) {
       payment_method_types: ["card"],
       mode: "payment",
       line_items: lineItems,
-
-      // ⭐ Your domain
       success_url: "https://davemarshartist.uk/thank-you.html",
       cancel_url: "https://davemarshartist.uk/checkout.html"
     });
