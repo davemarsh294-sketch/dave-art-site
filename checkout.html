@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta-name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout</title>
 
   <style>
@@ -42,11 +42,9 @@
       margin-bottom: 8px;
     }
 
-    #confirm-details {
+    .pay-button {
       width: 100%;
       padding: 12px;
-      background: black;
-      color: white;
       border: none;
       margin-top: 20px;
       letter-spacing: 0.12em;
@@ -55,17 +53,15 @@
       cursor: pointer;
     }
 
-    .payment-method {
-      margin-top: 20px;
-      padding: 12px;
-      border: 1px solid #ccc;
+    #pay-card {
+      background: black;
+      color: white;
     }
 
-    .payment-method label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
+    #pay-paypal {
+      background: white;
+      color: black;
+      border: 1px solid #000;
     }
   </style>
 </head>
@@ -104,29 +100,25 @@
     <label>Post / ZIP Code</label>
     <input id="postcode" required>
 
-    <!-- ⭐ REQUIRED HIDDEN FIELDS (these were missing) -->
+    <!-- Required hidden fields for checkout.js -->
     <input type="hidden" id="deliveryRegion" value="UK">
     <input type="hidden" id="deliveryCost" value="0">
 
-    <div class="payment-method">
-      <h2>Payment Method</h2>
-
-      <label>
-        <input type="radio" name="method" value="stripe" checked
-               onclick="window.checkoutMethod='stripe'">
-        Pay with Card (Stripe)
-      </label>
-
-      <label>
-        <input type="radio" name="method" value="paypal"
-               onclick="window.checkoutMethod='paypal'">
-        Pay with PayPal
-      </label>
-    </div>
-
-    <button id="confirm-details" type="button" onclick="startCheckout()">
-      Confirm & Continue
+    <!-- ⭐ RESTORED OLD LAYOUT: TWO BUTTONS -->
+    <button id="pay-card"
+            type="button"
+            class="pay-button"
+            onclick="window.checkoutMethod='stripe'; startCheckout();">
+      Pay with Card
     </button>
+
+    <button id="pay-paypal"
+            type="button"
+            class="pay-button"
+            onclick="window.checkoutMethod='paypal'; startCheckout();">
+      Pay with PayPal
+    </button>
+
   </form>
 
   <script src="checkout.js"></script>
