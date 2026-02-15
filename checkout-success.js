@@ -3,10 +3,11 @@
 -------------------------------------------------- */
 
 function sendOrderConfirmation() {
-  const orderData = JSON.parse(localStorage.getItem("pendingOrder"));
+  // ⭐ FIX: Use sessionStorage so Stripe redirect keeps the data
+  const orderData = JSON.parse(sessionStorage.getItem("pendingOrder"));
 
   if (!orderData) {
-    console.warn("No pendingOrder found in localStorage.");
+    console.warn("No pendingOrder found in sessionStorage.");
     return;
   }
 
