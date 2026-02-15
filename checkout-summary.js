@@ -8,14 +8,9 @@ function updateCheckoutSummary() {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const certificateFee = cart.reduce((sum, item) => sum + (item.certificate ? 30 * item.quantity : 0), 0);
 
-  // ⭐ DELIVERY RULES
+  // ⭐ DELIVERY RULES (adjust if needed)
   let deliveryRegion = "UK";
-  let deliveryCost = 0;
-
-  if (subtotal > 0) {
-    deliveryRegion = "UK";
-    deliveryCost = 1; // ← your UK delivery price
-  }
+  let deliveryCost = 1; // ← your UK delivery price
 
   // ⭐ UPDATE HIDDEN INPUTS FOR CHECKOUT.JS
   document.getElementById("deliveryRegion").value = deliveryRegion;
