@@ -1,90 +1,67 @@
-<script>
-  async function initThankYou() {
-    const params = new URLSearchParams(window.location.search);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      text-align: center;
+    }
+    #status {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
 
-    const stripeSessionId = params.get("session_id");
-    const paypalOrderId = params.get("token");
+  <h1>Thank you for your order</h1>
+  <p>Your payment is being confirmed…</p>
 
-    // Load the order saved before payment
-    const order = JSON.parse(localStorage.getItem("pendingOrder") || "null");
-    if (!order) return;
+  <div id="status">Processing…</div>
 
-    let orderId = null;
+  <script>
+    async function capturePayment() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
 
-    /* --------------------------------------------------
-       STRIPE SUCCESS
-    -------------------------------------------------- */
-    if (stripeSessionId) {
-      const response = await fetch(`/.netlify/functions/get-sessions?session_id=${stripeSessionId}`);
-      const data = await response.json();
-
-      if (data.session?.payment_status === "paid") {
-        orderId = data.session.id; // Stripe Checkout Session ID
-
-        await sendEmail(order, orderId);
-        clearLocalData();
+      if (!token) {
+        document.getElementById("status").innerText =
+          "No PayPal token found. If you completed payment, it may still be processing.";
+        return;
       }
 
-      renderSummary(order);
-      return;
+      try {
+        const response = await fetch("/.netlify/functions/capture-paypal-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token })
+        });
+
+        const data = await response.json();
+
+        if (data.status === "COMPLETED") {
+          document.getElementById("status").innerText =
+            "Payment confirmed — your order is complete.";
+
+          // Clear cart
+          localStorage.removeItem("dm_cart");
+        } else {
+          document.getElementById("status").innerText =
+            "Payment approved but not captured. Please check your PayPal account.";
+        }
+
+      } catch (err) {
+        document.getElementById("status").innerText =
+          "There was an error confirming your payment.";
+      }
     }
 
-    /* --------------------------------------------------
-       PAYPAL SUCCESS
-    -------------------------------------------------- */
-    if (paypalOrderId) {
-      orderId = paypalOrderId;
+    capturePayment();
+  </script>
 
-      await sendEmail(order, orderId);
-      clearLocalData();
-      renderSummary(order);
-      return;
-    }
-  }
-
-  /* --------------------------------------------------
-     SEND EMAIL VIA NETLIFY FUNCTION
-  -------------------------------------------------- */
-  async function sendEmail(order, orderId) {
-    await fetch("/.netlify/functions/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...order,
-        orderId
-      })
-    });
-  }
-
-  /* --------------------------------------------------
-     CLEAR CART + ORDER
-  -------------------------------------------------- */
-  function clearLocalData() {
-    localStorage.removeItem("dm_cart");
-    localStorage.removeItem("pendingOrder");
-    localStorage.removeItem("dm_delivery");
-  }
-
-  /* --------------------------------------------------
-     RENDER SUMMARY
-  -------------------------------------------------- */
-  function renderSummary(order) {
-    let subtotal = 0;
-    let certificateFee = 0;
-
-    order.items.forEach(item => {
-      subtotal += item.price * item.quantity;
-      if (item.certificate) certificateFee += 30;
-    });
-
-    const deliveryCost = order.delivery?.cost || 0;
-    const total = subtotal + certificateFee + deliveryCost;
-
-    document.getElementById("itemsTotal").textContent = "£" + subtotal.toFixed(2);
-    document.getElementById("deliveryFee").textContent = "£" + deliveryCost.toFixed(2);
-    document.getElementById("certificateFee").textContent = "£" + certificateFee.toFixed(2);
-    document.getElementById("grandTotal").textContent = "£" + total.toFixed(2);
-  }
-
-  initThankYou();
-</script>
+</body>
+</html>

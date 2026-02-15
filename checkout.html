@@ -54,3 +54,48 @@
       font-size: 13px;
       cursor: pointer;
     }
+  </style>
+</head>
+
+<body>
+
+  <h1>Checkout</h1>
+
+  <!-- ⭐ ORDER SUMMARY (auto-filled by JS) -->
+  <section id="order-summary"></section>
+
+  <h2>Your Details</h2>
+
+  <!-- ⭐ CONTACT FORM -->
+  <form id="checkout-form">
+
+    <label>Name</label>
+    <input id="name" required>
+
+    <label>Email</label>
+    <input id="email" type="email" required>
+
+    <label>Phone</label>
+    <input id="phone">
+
+    <label>Address Line 1</label>
+    <input id="address1" required>
+
+    <label>Address Line 2</label>
+    <input id="address2">
+
+    <label>Town / City</label>
+    <input id="city" required>
+
+    <label>Country</label>
+    <input id="country" required>
+
+    <label>Post / ZIP Code</label>
+    <input id="postcode" required>
+
+    <button id="confirm-details" type="button">Confirm & Continue</button>
+  </form>
+
+  <script src="checkout.js"></script>
+</body>
+</html>
