@@ -39,8 +39,8 @@ Total:
     `;
 
     await resend.emails.send({
-      from: "orders@YOURDOMAIN.com",
-      to: "davemarsh294.gmail.com",
+      from: "orders@davemarshartist.uk",
+      to: "davemarsh294@gmail.com",
       subject: "New Order Received",
       text: emailBody
     });
