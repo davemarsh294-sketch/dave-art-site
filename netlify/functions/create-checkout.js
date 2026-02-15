@@ -20,7 +20,7 @@ export async function handler(event) {
       quantity: item.quantity
     }));
 
-    // Add certificate fee if needed
+    // Certificate fee
     const certificateTotal = order.items.reduce((sum, item) => {
       return sum + (item.certificate ? 30 * item.quantity : 0);
     }, 0);
@@ -38,7 +38,7 @@ export async function handler(event) {
       });
     }
 
-    // Add delivery
+    // Delivery
     if (order.delivery.cost > 0) {
       lineItems.push({
         price_data: {
@@ -52,10 +52,21 @@ export async function handler(event) {
       });
     }
 
-    // ⭐ Stripe Checkout Session (Link disabled)
+    // ⭐ Stripe Checkout Session (Link fully disabled)
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"], // disables Link completely
+
+      payment_method_types: ["card"],
+
+      payment_method_options: {
+        card: {
+          setup_future_usage: null
+        },
+        link: {
+          enabled: false
+        }
+      },
+
       line_items: lineItems,
       success_url: "https://davemarshartist.uk/thank-you.html",
       cancel_url: "https://davemarshartist.uk/checkout.html"
