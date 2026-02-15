@@ -1,85 +1,50 @@
-const fetch = require("node-fetch");
+// netlify/functions/create-paypal-order.js
 
-exports.handler = async (event) => {
+import fetch from "node-fetch";
+
+export async function handler(event) {
   try {
-    const body = JSON.parse(event.body || "{}");
+    const order = JSON.parse(event.body);
 
-    const items = body.items || [];
-    const deliveryCost = body.delivery?.cost || 0;
+    const auth = Buffer.from(
+      process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_SECRET
+    ).toString("base64");
 
-    let itemsTotal = 0;
-    let certificateFee = 0;
-
-    const paypalItems = items.map(item => {
-      const qty = item.quantity || 1;
-      const lineTotal = item.price * qty;
-      itemsTotal += lineTotal;
-
-      if (item.certificate) {
-        certificateFee += 30 * qty;
-      }
-
-      return {
-        name: item.title || "Artwork",
-        unit_amount: {
-          currency_code: "GBP",
-          value: item.price.toFixed(2)
+    const paypalOrder = await fetch(
+      "https://api-m.paypal.com/v2/checkout/orders",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${auth}`
         },
-        quantity: qty.toString()
-      };
-    });
-
-    const total = itemsTotal + deliveryCost + certificateFee;
-
-    const paypalOrder = await fetch("https://api-m.paypal.com/v2/checkout/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Basic ${Buffer.from(
-          process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_SECRET
-        ).toString("base64")}`
-      },
-      body: JSON.stringify({
-        intent: "CAPTURE",
-        application_context: {
-          brand_name: "Dave Marsh Artist",
-          landing_page: "LOGIN",
-          user_action: "PAY_NOW",
-          return_url: "https://davemarshartist.uk/thank-you.html",
-          cancel_url: "https://davemarshartist.uk/cancelled.html"
-        },
-        purchase_units: [
-          {
-            amount: {
-              currency_code: "GBP",
-              value: total.toFixed(2),
-              breakdown: {
-                item_total: { currency_code: "GBP", value: itemsTotal.toFixed(2) },
-                shipping: { currency_code: "GBP", value: deliveryCost.toFixed(2) },
-                handling: { currency_code: "GBP", value: certificateFee.toFixed(2) }
+        body: JSON.stringify({
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              amount: {
+                currency_code: "GBP",
+                value: order.total.toFixed(2)
               }
-            },
-            items: paypalItems,
-            description: "Artwork Order"
+            }
+          ],
+          application_context: {
+            brand_name: "Dave Marsh Artist",
+            landing_page: "NO_PREFERENCE",
+
+            // ⭐ Your domain
+            return_url: "https://davemarshartist.uk/thank-you.html",
+            cancel_url: "https://davemarshartist.uk/checkout.html"
           }
-        ]
-      })
-    });
+        })
+      }
+    );
 
     const data = await paypalOrder.json();
 
-    if (!paypalOrder.ok) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: data })
-      };
-    }
-
-    const approvalUrl = data.links?.find(l => l.rel === "approve")?.href;
-
-    if (!approvalUrl) {
-      throw new Error("No approval URL returned from PayPal");
-    }
+    const approvalUrl = data.links.find(
+      (link) => link.rel === "approve"
+    ).href;
 
     return {
       statusCode: 200,
@@ -87,10 +52,9 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    console.error("PayPal error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
     };
   }
-};
+}
