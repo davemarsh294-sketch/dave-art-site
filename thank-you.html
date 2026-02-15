@@ -8,9 +8,9 @@
   <style>
     body {
       font-family: sans-serif;
-      padding: 40px;
-      max-width: 600px;
-      margin: auto;
+      padding: 20px;
+      max-width: 480px;
+      margin: 0 auto;
       line-height: 1.6;
       text-align: center;
     }
@@ -18,13 +18,24 @@
     h1 {
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      font-size: 22px;
+      font-size: 20px;
       margin-bottom: 20px;
     }
 
     p {
       font-size: 15px;
-      margin-bottom: 12px;
+      margin-bottom: 30px;
+    }
+
+    a.button {
+      display: block;
+      padding: 14px;
+      background: black;
+      color: white;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -32,9 +43,15 @@
 <body>
 
   <h1>Thank You</h1>
-  <p>Your order has been received.</p>
-  <p id="status">Finalising your confirmation…</p>
+  <p>Your order has been received. A confirmation email has been sent.</p>
 
-  <script src="checkout-success.js"></script>
+  <a href="/" class="button">Return to Site</a>
+
+  <script>
+    // Clear cart + pending order
+    localStorage.removeItem("dm_cart");
+    sessionStorage.removeItem("pendingOrder");
+  </script>
+
 </body>
 </html>
