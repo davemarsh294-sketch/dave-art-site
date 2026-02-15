@@ -4,70 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thank You</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       padding: 40px;
+      max-width: 600px;
+      margin: auto;
+      line-height: 1.6;
       text-align: center;
     }
-    #status {
-      font-size: 20px;
-      margin-top: 20px;
+
+    h1 {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 15px;
+      margin-bottom: 12px;
     }
   </style>
 </head>
+
 <body>
 
-  <h1>Thank you for your order</h1>
-  <p>Your payment is being confirmed…</p>
+  <h1>Thank You</h1>
+  <p>Your order has been received.</p>
+  <p id="status">Finalising your confirmation…</p>
 
-  <div id="status">Processing…</div>
-
-  <!-- ⭐ PAYPAL CAPTURE LOGIC -->
-  <script>
-    async function capturePayment() {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token");
-
-      // ⭐ If this is a Stripe order, skip PayPal capture
-      if (!token) {
-        console.log("Stripe order detected — skipping PayPal capture.");
-        return;
-      }
-
-      try {
-        const response = await fetch("/.netlify/functions/capture-paypal-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token })
-        });
-
-        const data = await response.json();
-
-        if (data.status === "COMPLETED") {
-          document.getElementById("status").innerText =
-            "Payment confirmed — your order is complete.";
-
-          localStorage.removeItem("dm_cart");
-        } else {
-          document.getElementById("status").innerText =
-            "Payment approved but not captured.";
-        }
-
-      } catch (err) {
-        document.getElementById("status").innerText =
-          "There was an error confirming your payment.";
-      }
-    }
-
-    capturePayment();
-  </script>
-
-  <!-- ⭐ EMAIL CONFIRMATION TRIGGER -->
   <script src="checkout-success.js"></script>
-  <script>
-    sendOrderConfirmation();
-  </script>
-
 </body>
 </html>
