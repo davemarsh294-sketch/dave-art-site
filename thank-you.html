@@ -6,20 +6,6 @@
 
   <title>Thank You – Dave Marsh | Original Artwork & Fine Art Prints</title>
 
-  <!-- SEO -->
-  <meta name="description" content="Thank you for your order. A confirmation email has been sent for your purchase of original artwork or fine art prints by UK artist Dave Marsh.">
-  <meta name="keywords" content="order complete, thank you, art purchase, Dave Marsh, fine art prints, original artwork">
-  <meta name="author" content="Dave Marsh">
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Thank You – Dave Marsh | Original Artwork & Fine Art Prints">
-  <meta property="og:description" content="Your order has been received. A confirmation email has been sent.">
-  <meta property="og:image" content="https://davemarshartist.uk/images/opening.jpg">
-  <meta property="og:type" content="website">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="images/favicon.png">
-
   <style>
     body {
       font-family: sans-serif;
@@ -27,30 +13,35 @@
       max-width: 480px;
       margin: 0 auto;
       line-height: 1.6;
-      text-align: center;
     }
 
     h1 {
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.05em;
       font-size: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
-    p {
-      font-size: 15px;
-      margin-bottom: 30px;
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
     }
 
-    a.button {
-      display: block;
+    .button {
+      width: 100%;
       padding: 14px;
-      background: black;
-      color: white;
-      text-decoration: none;
+      margin-top: 20px;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       font-size: 14px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .primary {
+      background: black;
+      color: white;
     }
   </style>
 </head>
@@ -58,13 +49,36 @@
 <body>
 
   <h1>Thank You</h1>
+
   <p>Your order has been received. A confirmation email has been sent.</p>
 
-  <a href="/" class="button">Return to Site</a>
+  <div id="orderDetails"></div>
+
+  <button class="button primary" onclick="window.location.href='/'">
+    Return Home
+  </button>
 
   <script>
-    // Clear cart + pending order
-    localStorage.removeItem("dm_cart");
+    const order = JSON.parse(sessionStorage.getItem("pendingOrder"));
+
+    if (order) {
+      const container = document.getElementById("orderDetails");
+
+      let itemsHTML = order.items.map(item => `
+        <div class="summary-row">
+          <span>${item.title} × ${item.quantity}</span>
+          <span>£${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+      `).join("");
+
+      container.innerHTML = `
+        <h2>Order Summary</h2>
+        ${itemsHTML}
+        <div class="summary-row"><strong>Delivery</strong><strong>£${order.delivery.cost.toFixed(2)}</strong></div>
+      `;
+    }
+
+    // Clear after showing
     sessionStorage.removeItem("pendingOrder");
   </script>
 
