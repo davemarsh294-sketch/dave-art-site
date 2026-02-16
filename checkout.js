@@ -1,21 +1,6 @@
 // checkout.js
 
-// ⭐ Fetch delivery cost from delivery.json
-async function getDeliveryCost(region) {
-  try {
-    const response = await fetch("/delivery.json");
-    const data = await response.json();
-
-    // If region doesn't exist, default to UK
-    return data[region] ?? data.uk;
-  } catch (error) {
-    console.error("Delivery JSON load error:", error);
-    return 0; // fallback
-  }
-}
-
-async function startCheckout() {
-
+function startCheckout() {
   const form = document.getElementById("checkout-form");
 
   // ⭐ Enforce required fields using browser validation
@@ -27,14 +12,9 @@ async function startCheckout() {
   // Build order object
   const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
 
-  // ⭐ Get region selected in checkout
+  // ⭐ These values MUST be set by the cart before coming here
   const region = document.getElementById("deliveryRegion").value;
-
-  // ⭐ Fetch delivery cost from delivery.json
-  const deliveryCost = await getDeliveryCost(region);
-
-  // ⭐ Update hidden deliveryCost input so UI stays in sync
-  document.getElementById("deliveryCost").value = deliveryCost;
+  const deliveryCost = Number(document.getElementById("deliveryCost").value);
 
   const order = {
     items: cart,
