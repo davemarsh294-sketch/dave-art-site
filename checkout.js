@@ -12,7 +12,7 @@ function startCheckout() {
   // Build order object
   const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
 
-  // ⭐ These values MUST be set by the cart before coming here
+  // ⭐ These values are set by checkout-summary.js
   const region = document.getElementById("deliveryRegion").value;
   const deliveryCost = Number(document.getElementById("deliveryCost").value);
 
