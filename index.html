@@ -826,6 +826,18 @@
 </div>
 
 <div class="cart-footer">
+<button onclick="
+  localStorage.removeItem('dm_cart');
+  localStorage.removeItem('dm_delivery_region');
+  renderCart();
+  closeCart();
+"
+  style="width:100%; padding:12px; background:white; color:black; border:1px solid #000;
+         margin-bottom:12px; letter-spacing:0.12em; text-transform:uppercase;
+         font-size:13px; cursor:pointer;">
+  Cancel Order
+</button>
+  
   <button id="go-to-checkout"
     style="width:100%; padding:12px; background:black; color:white; border:none; margin-bottom:12px;
            letter-spacing:0.12em; text-transform:uppercase; font-size:13px; cursor:pointer;">
