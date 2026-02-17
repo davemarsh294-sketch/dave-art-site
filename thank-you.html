@@ -2,70 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Thank You</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Thank You – Dave Marsh | Original Artwork & Fine Art Prints</title>
+
   <style>
     body {
       font-family: sans-serif;
       padding: 20px;
-      text-align: center;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
     }
-    #orderSummary {
+
+    h1 {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 16px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .button {
+      width: 100%;
+      padding: 14px;
       margin-top: 20px;
-      text-align: left;
-      display: inline-block;
-    }
-    button {
-      margin-top: 30px;
-      padding: 10px 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
       font-size: 14px;
       cursor: pointer;
+      border: none;
+    }
+
+    .primary {
+      background: black;
+      color: white;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Thank You for Your Order</h1>
+  <h1>Thank You</h1>
 
-  <div id="orderSummary"></div>
+  <p>Your order has been received. A confirmation email has been sent.</p>
 
-  <button onclick="returnHome()">Return Home</button>
+  <div id="orderDetails"></div>
+
+  <button class="button primary" onclick="returnHome()">
+    Return Home
+  </button>
 
   <script>
     // ------------------------------
-    // DISPLAY ORDER SUMMARY
+    // LOAD ORDER FROM SESSION
     // ------------------------------
-    const summary = JSON.parse(localStorage.getItem('lastOrder'));
+    const order = JSON.parse(sessionStorage.getItem("pendingOrder"));
 
-    if (summary) {
-      const container = document.getElementById('orderSummary');
+    if (order) {
+      const container = document.getElementById("orderDetails");
 
-      let html = "<h2>Your Order</h2><ul>";
+      // Build item rows
+      let itemsHTML = order.items.map(item => `
+        <div class="summary-row">
+          <span>${item.title} × ${item.quantity}</span>
+          <span>£${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+      `).join("");
 
-      summary.items.forEach(item => {
-        html += `<li>${item.name} — £${item.price}</li>`;
-      });
+      // Delivery
+      const deliveryHTML = `
+        <div class="summary-row">
+          <strong>Delivery</strong>
+          <strong>£${order.delivery.cost.toFixed(2)}</strong>
+        </div>
+      `;
 
-      html += `</ul><p><strong>Total: £${summary.total}</strong></p>`;
+      // Total
+      const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const total = (subtotal + order.delivery.cost).toFixed(2);
 
-      container.innerHTML = html;
+      const totalHTML = `
+        <div class="summary-row" style="margin-top:12px;">
+          <strong>Total</strong>
+          <strong>£${total}</strong>
+        </div>
+      `;
+
+      container.innerHTML = `
+        <h2>Order Summary</h2>
+        ${itemsHTML}
+        ${deliveryHTML}
+        ${totalHTML}
+      `;
     }
+
+    // Clear pending order
+    sessionStorage.removeItem("pendingOrder");
 
     // ------------------------------
     // RETURN HOME + RESET CART
     // ------------------------------
     function returnHome() {
-      // Reset cart count + items
-      localStorage.setItem('cartCount', '0');
-      localStorage.setItem('cartItems', JSON.stringify([]));
+      localStorage.setItem("dm_cart", JSON.stringify([]));
+      localStorage.setItem("cartCount", "0");
 
-      // Reset badge if visible
-      const badge = document.getElementById('cartCountBadge');
-      if (badge) badge.textContent = '0';
+      const badge = document.getElementById("cartCountBadge");
+      if (badge) badge.textContent = "0";
 
-      // Redirect home
-      window.location.href = "index.html";
+      window.location.href = "/";
     }
   </script>
 
