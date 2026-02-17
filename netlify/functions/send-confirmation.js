@@ -23,52 +23,48 @@ export async function handler(event) {
       return sum + (item.certificate ? 30 * item.quantity : 0);
     }, 0);
 
-    const itemsTotal = baseItemsTotal + certificateTotal;
     const deliveryTotal = order.delivery.cost || 0;
 
-    const grandTotal = itemsTotal + deliveryTotal;
+    const grandTotal = baseItemsTotal + certificateTotal + deliveryTotal;
 
     // -------------------------------
-    // BUILD ITEM LIST HTML
+    // BUILD CLEAN ITEM LIST
     // -------------------------------
 
     const itemsHtml = order.items
       .map((item) => {
-        const certLine = item.certificate
-          ? `<div style="margin-left:12px; font-size:13px; color:#555;">Certificate: £30 × ${item.quantity}</div>`
-          : "";
-
         return `
           <div style="margin-bottom:12px;">
             <div><strong>${item.title}</strong></div>
             <div>£${item.price} × ${item.quantity}</div>
-            ${certLine}
           </div>
         `;
       })
       .join("");
 
+    const certificateHtml = certificateTotal > 0
+      ? `<div style="margin-bottom:12px;"><strong>Certificate</strong><br>£30 × ${order.items.find(i => i.certificate).quantity}</div>`
+      : "";
+
     // -------------------------------
-    // EMAIL HTML (clean + tidy)
+    // EMAIL HTML (clean + logical)
     // -------------------------------
 
     const emailHtml = `
       <div style="font-family: sans-serif; line-height: 1.6; max-width: 480px;">
-        
+
         <h2 style="margin-bottom: 8px;">Order Confirmation</h2>
         <p>Thank you for your order, ${order.customer.name}.</p>
 
         <h3 style="margin-top: 24px;">Order Breakdown</h3>
 
-        ${itemsHtml}
-
-        <div style="margin-top: 16px;">
-          <div><strong>Items Total:</strong> £${itemsTotal.toFixed(2)}</div>
-          <div><strong>Delivery:</strong> £${deliveryTotal.toFixed(2)}</div>
-          <div><strong>Certificates:</strong> £${certificateTotal.toFixed(2)}</div>
+        <div style="margin-bottom: 16px;">
+          ${itemsHtml}
+          ${certificateHtml}
+          <div><strong>Delivery</strong><br>£${deliveryTotal.toFixed(2)}</div>
         </div>
 
-        <h3 style="margin-top: 16px;">Grand Total Paid: £${grandTotal.toFixed(2)}</h3>
+        <h3 style="margin-top: 16px;">Total Paid: £${grandTotal.toFixed(2)}</h3>
 
         <h3 style="margin-top: 24px;">Delivery Details</h3>
         <p>
