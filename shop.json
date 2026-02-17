@@ -1,0 +1,158 @@
+[
+  {
+    "id": "s01",
+    "title": "The Beacon",
+    "image": "Images/beacon.jpg",
+    "alt": "oil painting titled Beacon",
+    "specs": "Giclée print of original picture sized 33cm h × 75cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 33cm h × 75cm w", "price": 125 },
+      { "label": "Print size 26cm h x 59cm w", "price": 90 },
+      { "label": "Print size 18cm x 42cm", "price": 65 }
+    ]
+  },
+  {
+    "id": "s02",
+    "title": "Android",
+    "image": "Images/android.jpg",
+    "alt": "oil painting titled Android",
+    "specs": "Giclée print of original picture sized 59cm h × 40cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 59cm h × 40cm w", "price": 90 },
+      { "label": "Print size 42cm h x 28cm w", "price": 65 },
+      { "label": "Print size 29cm h x 19cm h", "price": 50 }
+    ]
+  },
+   {
+    "id": "s03",
+    "title": "Rest In Peace",
+    "image": "Images/rest.jpg",
+    "alt": "oil painting titled Rest In Peace",
+    "specs": "Giclée print of original picture sized 58cm h × 77cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 58cm h × 77cm w", "price": 125 },
+      { "label": "Print size 42cm h x 55cm w", "price": 90 },
+      { "label": "Print size 29cm h x 38cm w", "price": 65 }
+    ]
+  },
+   {
+    "id": "s04",
+    "title": "Its a Halfpenny Green Moon",
+    "image": "Images/its.jpg",
+    "alt": "oil painting titled Its a Halfpenny Green Moon",
+    "specs": "Giclée print of original picture sized 47cm h × 40cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 47cm h × 40cm w", "price": 90 },
+      { "label": "Print size 34cm h x 29cm w", "price": 65 },
+      { "label": "Print size 21cm h x 25cm w", "price": 50 }
+    ]
+  },
+  {
+    "id": "s05",
+    "title": "Ghosts of Old Park Hill",
+    "image": "Images/ghosts.jpg",
+    "alt": "oil painting titled Ghosts of Old Park Hill",
+    "specs": "Giclée print of original picture sized 40cm h × 84cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 40cm h × 84cm w", "price": 125 },
+      { "label": "Print size 28cm h x 59cm w", "price": 90 },
+      { "label": "Print size 20cm h x 42cm w", "price": 65 }
+    ]
+  },
+   {
+    "id": "s06",
+    "title": "Death",
+    "image": "Images/death.jpg",
+    "alt": "acrylic painting titled Death",
+    "specs": "Giclée print of original picture sized 59cm h × 38cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 59cm h × 39cm w", "price": 90 },
+      { "label": "Print size 42cm h x 28cm w", "price": 75 },
+      { "label": "Print size 29cm h x 19cm h", "price": 65 }
+    ]
+  },
+   {
+    "id": "s07",
+    "title": "One For Sorrow",
+    "image": "Images/one.jpg",
+    "alt": "pencil drawing titled One For Sorrow",
+    "specs": "Giclée print of original picture sized 46cm h × 38cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 46cm h × 38cm w", "price": 90 },
+      { "label": "Print size 35cm h x 29cm w", "price": 75 },
+      { "label": "Print size 21cm h x 24cm w", "price": 60 }
+    ]
+  },
+  {
+    "id": "s08",
+    "title": "Big Boy",
+    "image": "Images/big.jpg",
+    "alt": "pencil drawing titled Big Boy",
+    "specs": "Giclée print of original picture sized 34cm h × 28cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 34cm h × 28cm w", "price": 90 },
+      { "label": "Print size 29cm h x 24cm w", "price": 65 },
+      { "label": "Print size 21cm h x 17cm w", "price": 50 }
+    ]
+  },
+   {
+    "id": "s9",
+    "title": "Defiled",
+    "image": "Images/defiled.jpg",
+    "alt": "pencil drawing Defiled",
+    "specs": "Giclée print of original picture sized 40cm h × 40cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 40cm h × 40cm w", "price": 90 },
+      { "label": "Print size 29cm h x 29cm w", "price": 75 },
+      { "label": "Print size 21cm h x 21cm w", "price": 50 }
+    ]
+  },
+   {
+    "id": "s10",
+    "title": "Rapscallions",
+    "image": "Images/raps.jpg",
+    "alt": "oil painting titled Rapscallions",
+    "specs": "Giclée print of original picture sized 42cm h × 56cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 42cm h × 56cm w", "price": 90 },
+      { "label": "Print size 29cm h x 38cm w", "price": 75 },
+      { "label": "Print size 21cm h x 28cm w", "price": 50 }
+    ]
+  },
+   {
+    "id": "s11",
+    "title": "Thinking of Chris",
+    "image": "Images/think.jpg",
+    "alt": "oil painting titled Thinking of Chris",
+    "specs": "Giclée print of original picture sized 50cm h × 35cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 50cm h × 35cm w", "price": 90 },
+      { "label": "Print size 29cm h x 42cm w", "price": 75 },
+      { "label": "Print size 20cm h x 29cm w", "price": 50 }
+    ]
+  },
+  {
+    "id": "s12",
+    "title": "Home is North",
+    "image": "Images/home.jpg",
+    "alt": "oil painting titled Home is North",
+    "specs": "Giclée print of original picture sized 38cm h × 50cm w",
+    "edition": "Limited edition of 50 - Signed by artist & numbered. Available sizes:-",
+    "sizes": [
+      { "label": "Print size 38cm h × 50cm w", "price": 90 },
+      { "label": "Print size 29cm h x 38cm w", "price": 75 },
+      { "label": "Print size 21cm h x 29cm w", "price": 50 }
+    ]
+  }
+]
