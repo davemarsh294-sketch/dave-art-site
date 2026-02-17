@@ -37,53 +37,49 @@ let orderTotal = calculateOrderTotal();
 // PAYMENT SUCCESS HANDLER
 // ---------------------------------------------
 function handleSuccessfulPayment() {
-  // Build order summary object
   const orderSummary = {
     items: cartItems,
     total: orderTotal
   };
 
-  // Store order summary for thankyou page
   localStorage.setItem('lastOrder', JSON.stringify(orderSummary));
 
-  // Redirect to thankyou page
   window.location.href = "thankyou.html";
 }
 
 
 // ---------------------------------------------
-// STRIPE PAYMENT (if used)
+// STRIPE PAYMENT
 // ---------------------------------------------
-async function payWithStripe() {
-  // Your existing Stripe logic here...
+function payWithStripe() {
+  // Your Stripe logic here...
   // After successful payment:
   handleSuccessfulPayment();
 }
 
 
 // ---------------------------------------------
-// PAYPAL PAYMENT (if used)
+// PAYPAL PAYMENT
 // ---------------------------------------------
 function payWithPayPal() {
-  // Your existing PayPal logic here...
+  // Your PayPal logic here...
   // After successful payment:
   handleSuccessfulPayment();
 }
 
 
 // ---------------------------------------------
-// FORM VALIDATION (if you use a form)
+// FORM VALIDATION
 // ---------------------------------------------
 function validateCheckoutForm() {
   const form = document.getElementById('checkoutForm');
   if (!form) return true;
-
   return form.checkValidity();
 }
 
 
 // ---------------------------------------------
-// COMPLETE ORDER BUTTON
+// COMPLETE ORDER (offline checkout)
 // ---------------------------------------------
 function completeOrder() {
   if (!validateCheckoutForm()) {
@@ -91,11 +87,24 @@ function completeOrder() {
     return;
   }
 
-  // If you use Stripe or PayPal, call those instead:
-  // payWithStripe();
-  // OR
-  // payWithPayPal();
-
-  // If you use a simple offline checkout:
   handleSuccessfulPayment();
 }
+
+
+// ---------------------------------------------
+// BUTTON EVENT LISTENERS (IMPORTANT)
+// ---------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+
+  const cardBtn = document.getElementById("payWithCard");
+  const paypalBtn = document.getElementById("payWithPayPal");
+
+  if (cardBtn) {
+    cardBtn.addEventListener("click", payWithStripe);
+  }
+
+  if (paypalBtn) {
+    paypalBtn.addEventListener("click", payWithPayPal);
+  }
+
+});
