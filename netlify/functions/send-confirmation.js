@@ -12,24 +12,40 @@ export async function handler(event) {
     const yourEmail = "davemarsh294@gmail.com";
 
     // -------------------------------
-    // CALCULATE TOTALS CORRECTLY
+    // CALCULATE TOTALS
     // -------------------------------
 
-    // Item total
     const itemTotal = order.items.reduce((sum, item) => {
       return sum + item.price * item.quantity;
     }, 0);
 
-    // Delivery cost
     const deliveryTotal = order.delivery.cost || 0;
 
-    // Certificate fees (if any)
     const certificateTotal = order.items.reduce((sum, item) => {
       return sum + (item.certificate ? 30 * item.quantity : 0);
     }, 0);
 
-    // Grand total (this is what the customer actually paid)
     const grandTotal = itemTotal + deliveryTotal + certificateTotal;
+
+    // -------------------------------
+    // BUILD ITEM LIST HTML
+    // -------------------------------
+
+    const itemsHtml = order.items
+      .map((item) => {
+        const certLine = item.certificate
+          ? `<div style="margin-left:12px; font-size:13px;">Certificate: £30 × ${item.quantity}</div>`
+          : "";
+
+        return `
+          <li style="margin-bottom:10px;">
+            <strong>${item.title}</strong><br>
+            £${item.price} × ${item.quantity}<br>
+            ${certLine}
+          </li>
+        `;
+      })
+      .join("");
 
     // -------------------------------
     // BUILD EMAIL HTML
@@ -39,11 +55,23 @@ export async function handler(event) {
       <h2>Order Confirmation</h2>
       <p>Thank you for your order, ${order.customer.name}.</p>
 
-      <p><strong>Total Paid:</strong> £${grandTotal.toFixed(2)}</p>
+      <h3>Order Breakdown</h3>
 
-      <p><strong>Delivery Region:</strong> ${order.delivery.region}</p>
+      <ul style="padding-left:16px; margin-bottom:20px;">
+        ${itemsHtml}
+      </ul>
 
-      <p><strong>Address:</strong><br>
+      <p><strong>Items Total:</strong> £${itemTotal.toFixed(2)}</p>
+      <p><strong>Delivery:</strong> £${deliveryTotal.toFixed(2)}</p>
+      <p><strong>Certificates:</strong> £${certificateTotal.toFixed(2)}</p>
+
+      <p style="margin-top:12px; font-size:18px;">
+        <strong>Grand Total Paid: £${grandTotal.toFixed(2)}</strong>
+      </p>
+
+      <h3>Delivery Details</h3>
+      <p>
+        ${order.customer.name}<br>
         ${order.customer.address1}<br>
         ${order.customer.address2 || ""}<br>
         ${order.customer.city}<br>
@@ -51,15 +79,7 @@ export async function handler(event) {
         ${order.customer.country}
       </p>
 
-      <h3>Items</h3>
-      <ul>
-        ${order.items
-          .map(
-            (item) =>
-              `<li>${item.title} — £${item.price} × ${item.quantity}</li>`
-          )
-          .join("")}
-      </ul>
+      <p><strong>Delivery Region:</strong> ${order.delivery.region}</p>
     `;
 
     // -------------------------------
