@@ -1,78 +1,101 @@
-// checkout.js
+// ---------------------------------------------
+// CART STATE
+// ---------------------------------------------
+let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+let cartCount = parseInt(localStorage.getItem('cartCount')) || 0;
 
-function startCheckout() {
-  const form = document.getElementById("checkout-form");
+// Update cart badge on load
+const badge = document.getElementById('cartCountBadge');
+if (badge) badge.textContent = cartCount;
 
-  // ⭐ Enforce required fields using browser validation
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return; // stop checkout until fields are filled
-  }
 
-  // Build order object
-  const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
+// ---------------------------------------------
+// ADD TO CART
+// ---------------------------------------------
+function addToCart(item) {
+  cartItems.push(item);
+  cartCount++;
 
-  // ⭐ These values are set by checkout-summary.js
-  const region = document.getElementById("deliveryRegion").value;
-  const deliveryCost = Number(document.getElementById("deliveryCost").value);
+  localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  localStorage.setItem('cartCount', cartCount.toString());
 
-  const order = {
-    items: cart,
-    customer: {
-      name: document.getElementById("name").value,
-      email: document.getElementById("email").value,
-      phone: document.getElementById("phone").value,
-      address1: document.getElementById("address1").value,
-      address2: document.getElementById("address2").value,
-      city: document.getElementById("city").value,
-      country: document.getElementById("country").value,
-      postcode: document.getElementById("postcode").value
-    },
-    delivery: {
-      region: region,
-      cost: deliveryCost
-    }
+  if (badge) badge.textContent = cartCount;
+}
+
+
+// ---------------------------------------------
+// CALCULATE ORDER TOTAL
+// ---------------------------------------------
+function calculateOrderTotal() {
+  return cartItems.reduce((sum, item) => sum + Number(item.price), 0).toFixed(2);
+}
+
+let orderTotal = calculateOrderTotal();
+
+
+// ---------------------------------------------
+// PAYMENT SUCCESS HANDLER
+// ---------------------------------------------
+function handleSuccessfulPayment() {
+  // Build order summary object
+  const orderSummary = {
+    items: cartItems,
+    total: orderTotal
   };
 
-  // Save pending order for thank-you page
-  sessionStorage.setItem("pendingOrder", JSON.stringify(order));
+  // Store order summary for thankyou page
+  localStorage.setItem('lastOrder', JSON.stringify(orderSummary));
 
-  // Decide payment method
-  if (window.checkoutMethod === "stripe") {
-    startStripe(order);
-  } else if (window.checkoutMethod === "paypal") {
-    startPayPal(order);
-  }
+  // Redirect to thankyou page
+  window.location.href = "thankyou.html";
 }
 
-// ⭐ Stripe Checkout
-async function startStripe(order) {
-  const res = await fetch("/.netlify/functions/create-checkout", {
-    method: "POST",
-    body: JSON.stringify(order)
-  });
 
-  const data = await res.json();
-
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    alert("There was an error starting Stripe checkout");
-  }
+// ---------------------------------------------
+// STRIPE PAYMENT (if used)
+// ---------------------------------------------
+async function payWithStripe() {
+  // Your existing Stripe logic here...
+  // After successful payment:
+  handleSuccessfulPayment();
 }
 
-// ⭐ PayPal Checkout
-async function startPayPal(order) {
-  const res = await fetch("/.netlify/functions/create-paypal-order", {
-    method: "POST",
-    body: JSON.stringify(order)
-  });
 
-  const data = await res.json();
+// ---------------------------------------------
+// PAYPAL PAYMENT (if used)
+// ---------------------------------------------
+function payWithPayPal() {
+  // Your existing PayPal logic here...
+  // After successful payment:
+  handleSuccessfulPayment();
+}
 
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    alert("There was an error starting PayPal checkout");
+
+// ---------------------------------------------
+// FORM VALIDATION (if you use a form)
+// ---------------------------------------------
+function validateCheckoutForm() {
+  const form = document.getElementById('checkoutForm');
+  if (!form) return true;
+
+  return form.checkValidity();
+}
+
+
+// ---------------------------------------------
+// COMPLETE ORDER BUTTON
+// ---------------------------------------------
+function completeOrder() {
+  if (!validateCheckoutForm()) {
+    alert("Please complete all required fields.");
+    return;
   }
+
+  // If you use Stripe or PayPal, call those instead:
+  // payWithStripe();
+  // OR
+  // payWithPayPal();
+
+  // If you use a simple offline checkout:
+  handleSuccessfulPayment();
 }
