@@ -1,110 +1,91 @@
-// ---------------------------------------------
-// CART STATE
-// ---------------------------------------------
-let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-let cartCount = parseInt(localStorage.getItem('cartCount')) || 0;
+// checkout.js
 
-// Update cart badge on load
-const badge = document.getElementById('cartCountBadge');
-if (badge) badge.textContent = cartCount;
+function startCheckout() {
+  const form = document.getElementById("checkout-form");
 
+  // ⭐ Enforce required fields using browser validation
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return; // stop checkout until fields are filled
+  }
 
-// ---------------------------------------------
-// ADD TO CART
-// ---------------------------------------------
-function addToCart(item) {
-  cartItems.push(item);
-  cartCount++;
+  // Build order object
+  const cart = JSON.parse(localStorage.getItem("dm_cart")) || [];
 
-  localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  localStorage.setItem('cartCount', cartCount.toString());
+  // ⭐ These values are set by checkout-summary.js
+  const region = document.getElementById("deliveryRegion").value;
+  const deliveryCost = Number(document.getElementById("deliveryCost").value);
 
-  if (badge) badge.textContent = cartCount;
-}
-
-
-// ---------------------------------------------
-// CALCULATE ORDER TOTAL
-// ---------------------------------------------
-function calculateOrderTotal() {
-  return cartItems.reduce((sum, item) => sum + Number(item.price), 0).toFixed(2);
-}
-
-let orderTotal = calculateOrderTotal();
-
-
-// ---------------------------------------------
-// PAYMENT SUCCESS HANDLER
-// ---------------------------------------------
-function handleSuccessfulPayment() {
-  const orderSummary = {
-    items: cartItems,
-    total: orderTotal
+  const order = {
+    items: cart,
+    customer: {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      address1: document.getElementById("address1").value,
+      address2: document.getElementById("address2").value,
+      city: document.getElementById("city").value,
+      country: document.getElementById("country").value,
+      postcode: document.getElementById("postcode").value
+    },
+    delivery: {
+      region: region,
+      cost: deliveryCost
+    }
   };
 
-  localStorage.setItem('lastOrder', JSON.stringify(orderSummary));
+  // ⭐ Save pending order for thank-you page
+  sessionStorage.setItem("pendingOrder", JSON.stringify(order));
 
-  window.location.href = "thankyou.html";
-}
+  // ⭐ Save simplified order summary for thankyou.html
+  const orderSummary = {
+    items: cart,
+    total: calculateTotal(cart, deliveryCost)
+  };
+  localStorage.setItem("lastOrder", JSON.stringify(orderSummary));
 
-
-// ---------------------------------------------
-// STRIPE PAYMENT
-// ---------------------------------------------
-function payWithStripe() {
-  // Your Stripe logic here...
-  // After successful payment:
-  handleSuccessfulPayment();
-}
-
-
-// ---------------------------------------------
-// PAYPAL PAYMENT
-// ---------------------------------------------
-function payWithPayPal() {
-  // Your PayPal logic here...
-  // After successful payment:
-  handleSuccessfulPayment();
-}
-
-
-// ---------------------------------------------
-// FORM VALIDATION
-// ---------------------------------------------
-function validateCheckoutForm() {
-  const form = document.getElementById('checkoutForm');
-  if (!form) return true;
-  return form.checkValidity();
-}
-
-
-// ---------------------------------------------
-// COMPLETE ORDER (offline checkout)
-// ---------------------------------------------
-function completeOrder() {
-  if (!validateCheckoutForm()) {
-    alert("Please complete all required fields.");
-    return;
+  // Decide payment method
+  if (window.checkoutMethod === "stripe") {
+    startStripe(order);
+  } else if (window.checkoutMethod === "paypal") {
+    startPayPal(order);
   }
-
-  handleSuccessfulPayment();
 }
 
+// ⭐ Calculate total including delivery
+function calculateTotal(cart, deliveryCost) {
+  const subtotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
+  return (subtotal + deliveryCost).toFixed(2);
+}
 
-// ---------------------------------------------
-// BUTTON EVENT LISTENERS (IMPORTANT)
-// ---------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
+// ⭐ Stripe Checkout
+async function startStripe(order) {
+  const res = await fetch("/.netlify/functions/create-checkout", {
+    method: "POST",
+    body: JSON.stringify(order)
+  });
 
-  const cardBtn = document.getElementById("payWithCard");
-  const paypalBtn = document.getElementById("payWithPayPal");
+  const data = await res.json();
 
-  if (cardBtn) {
-    cardBtn.addEventListener("click", payWithStripe);
+  if (data.url) {
+    window.location.href = data.url;
+  } else {
+    alert("There was an error starting Stripe checkout");
   }
+}
 
-  if (paypalBtn) {
-    paypalBtn.addEventListener("click", payWithPayPal);
+// ⭐ PayPal Checkout
+async function startPayPal(order) {
+  const res = await fetch("/.netlify/functions/create-paypal-order", {
+    method: "POST",
+    body: JSON.stringify(order)
+  });
+
+  const data = await res.json();
+
+  if (data.url) {
+    window.location.href = data.url;
+  } else {
+    alert("There was an error starting PayPal checkout");
   }
-
-});
+}
