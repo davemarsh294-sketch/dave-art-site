@@ -7,7 +7,7 @@
     "specs": "Giclée print - original size 33cm h × 75cm w",
     "edition": "Limited edition of 50 - Signed by artist & numbered",
     "sizes": [
-      { "label": "Original size 33cm h × 75cm w", "price": 125 },
+      { "label": "Original size 33cm h × 75cm w", "price":  },
       { "label": "Size 26cm h x 59cm w", "price": 90 },
       { "label": "Size 18cm x 42cm", "price": 65 }
     ]
