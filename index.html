@@ -665,11 +665,14 @@
 
 .visually-hidden {
   position: absolute;
-  left: -9999px;
-  top: auto;
   width: 1px;
   height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 
@@ -722,11 +725,7 @@
   </p>
 <!-- SEO TEXT (now aligned with hero image edges) -->
     <p class="visually-hidden">
-      font-size:8px;
-      line-height:1.4;
-      margin:0px 0 6px;
-      text-align:center;
-    ">
+      
       Original artwork and fine art prints exploring the realms of realism and surrealism.
     </p>
     
@@ -752,12 +751,8 @@
         Latest News
       </h2>
 <p class="visually-hidden">
-      font-size:8px;
-      line-height:1.4;
-      margin:0px 0 22px;
-    
-    ">
-Most recent news item civering new artwork, exhibitions, events and recent print releases.
+      
+Most recent news item covering new artwork, exhibitions, events and recent print releases.
 </p>
       <div class="news-teaser-row">
         <img class="news-teaser-thumb" src="" alt="">
@@ -775,11 +770,7 @@ Most recent news item civering new artwork, exhibitions, events and recent print
     </h2>
 
 <p class="visually-hidden">
-      font-size:8px;
-      line-height:1.4;
-      margin:0px 0 6px;
-    
-    ">
+      
   Dave is a UK artist working across the genres of realism and surrealism
 </p>
 
@@ -804,11 +795,7 @@ Most recent news item civering new artwork, exhibitions, events and recent print
       Gallery
     </h2>
 <p class="visually-hidden">
-      font-size:8px;
-      line-height:1.4;
-      margin:0px 0 22px;
-    
-    ">
+      
   A curated collection of original artwork and fine art prints by Dave Marsh.
 </p>
     <div id="galleryGrid" class="grid"></div>
@@ -822,11 +809,7 @@ Most recent news item civering new artwork, exhibitions, events and recent print
       Shop
     </h2>
 <p class="visually-hidden">
-      font-size:8px;
-      line-height:1.4;
-      margin:0px 0 22px;
-    
-    ">
+      
   Signed limited edition fine art prints available for purchase.
 </p>
 
@@ -842,11 +825,7 @@ Most recent news item civering new artwork, exhibitions, events and recent print
       News
     </h2>
 <p class="visually-hidden">
-      font-size:8px;
-      line-height:1.4;
-      margin:0px 0 22px;
-    
-    ">
+      
   Updates on new artwork, exhibitions, events and recent print releases.
 </p>
     <div id="newsList"></div>
