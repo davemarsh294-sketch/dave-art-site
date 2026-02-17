@@ -15,17 +15,18 @@ export async function handler(event) {
     // CALCULATE TOTALS
     // -------------------------------
 
-    const itemTotal = order.items.reduce((sum, item) => {
+    const baseItemsTotal = order.items.reduce((sum, item) => {
       return sum + item.price * item.quantity;
     }, 0);
-
-    const deliveryTotal = order.delivery.cost || 0;
 
     const certificateTotal = order.items.reduce((sum, item) => {
       return sum + (item.certificate ? 30 * item.quantity : 0);
     }, 0);
 
-    const grandTotal = itemTotal + deliveryTotal + certificateTotal;
+    const itemsTotal = baseItemsTotal + certificateTotal;
+    const deliveryTotal = order.delivery.cost || 0;
+
+    const grandTotal = itemsTotal + deliveryTotal;
 
     // -------------------------------
     // BUILD ITEM LIST HTML
@@ -34,52 +35,53 @@ export async function handler(event) {
     const itemsHtml = order.items
       .map((item) => {
         const certLine = item.certificate
-          ? `<div style="margin-left:12px; font-size:13px;">Certificate: £30 × ${item.quantity}</div>`
+          ? `<div style="margin-left:12px; font-size:13px; color:#555;">Certificate: £30 × ${item.quantity}</div>`
           : "";
 
         return `
-          <li style="margin-bottom:10px;">
-            <strong>${item.title}</strong><br>
-            £${item.price} × ${item.quantity}<br>
+          <div style="margin-bottom:12px;">
+            <div><strong>${item.title}</strong></div>
+            <div>£${item.price} × ${item.quantity}</div>
             ${certLine}
-          </li>
+          </div>
         `;
       })
       .join("");
 
     // -------------------------------
-    // BUILD EMAIL HTML
+    // EMAIL HTML (clean + tidy)
     // -------------------------------
 
     const emailHtml = `
-      <h2>Order Confirmation</h2>
-      <p>Thank you for your order, ${order.customer.name}.</p>
+      <div style="font-family: sans-serif; line-height: 1.6; max-width: 480px;">
+        
+        <h2 style="margin-bottom: 8px;">Order Confirmation</h2>
+        <p>Thank you for your order, ${order.customer.name}.</p>
 
-      <h3>Order Breakdown</h3>
+        <h3 style="margin-top: 24px;">Order Breakdown</h3>
 
-      <ul style="padding-left:16px; margin-bottom:20px;">
         ${itemsHtml}
-      </ul>
 
-      <p><strong>Items Total:</strong> £${itemTotal.toFixed(2)}</p>
-      <p><strong>Delivery:</strong> £${deliveryTotal.toFixed(2)}</p>
-      <p><strong>Certificates:</strong> £${certificateTotal.toFixed(2)}</p>
+        <div style="margin-top: 16px;">
+          <div><strong>Items Total:</strong> £${itemsTotal.toFixed(2)}</div>
+          <div><strong>Delivery:</strong> £${deliveryTotal.toFixed(2)}</div>
+          <div><strong>Certificates:</strong> £${certificateTotal.toFixed(2)}</div>
+        </div>
 
-      <p style="margin-top:12px; font-size:18px;">
-        <strong>Grand Total Paid: £${grandTotal.toFixed(2)}</strong>
-      </p>
+        <h3 style="margin-top: 16px;">Grand Total Paid: £${grandTotal.toFixed(2)}</h3>
 
-      <h3>Delivery Details</h3>
-      <p>
-        ${order.customer.name}<br>
-        ${order.customer.address1}<br>
-        ${order.customer.address2 || ""}<br>
-        ${order.customer.city}<br>
-        ${order.customer.postcode}<br>
-        ${order.customer.country}
-      </p>
+        <h3 style="margin-top: 24px;">Delivery Details</h3>
+        <p>
+          ${order.customer.name}<br>
+          ${order.customer.address1}<br>
+          ${order.customer.address2 || ""}<br>
+          ${order.customer.city}<br>
+          ${order.customer.postcode}<br>
+          ${order.customer.country}
+        </p>
 
-      <p><strong>Delivery Region:</strong> ${order.delivery.region}</p>
+        <p><strong>Delivery Region:</strong> ${order.delivery.region}</p>
+      </div>
     `;
 
     // -------------------------------
