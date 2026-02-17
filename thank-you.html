@@ -66,11 +66,11 @@
   </button>
 
   <script>
+    const order = JSON.parse(sessionStorage.getItem("pendingOrder"));
+
     // ------------------------------
     // SEND CONFIRMATION EMAIL
     // ------------------------------
-    const order = JSON.parse(sessionStorage.getItem("pendingOrder"));
-
     if (order) {
       fetch("/.netlify/functions/send-confirmation", {
         method: "POST",
@@ -84,35 +84,37 @@
     if (order) {
       const container = document.getElementById("orderDetails");
 
-      let itemsHTML = order.items.map(item => `
-        <div class="summary-row">
-          <span>${item.title} × ${item.quantity}</span>
-          <span>£${(item.price * item.quantity).toFixed(2)}</span>
-        </div>
-      `).join("");
+      const itemsHTML = order.items.map(item => {
+        const certRow = item.certificate
+          ? `
+            <div class="summary-row" style="margin-left:12px;">
+              <span>Certificate</span>
+              <span>£${(30 * item.quantity).toFixed(2)}</span>
+            </div>
+          `
+          : "";
 
-      const deliveryHTML = `
-        <div class="summary-row">
-          <strong>Delivery</strong>
-          <strong>£${order.delivery.cost.toFixed(2)}</strong>
-        </div>
-      `;
+        return `
+          <div class="summary-row">
+            <span>${item.title} × ${item.quantity}</span>
+            <span>£${(item.price * item.quantity).toFixed(2)}</span>
+          </div>
+          ${certRow}
+        `;
+      }).join("");
 
-      const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      const total = (subtotal + order.delivery.cost).toFixed(2);
+      const baseItemsTotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const certificateTotal = order.items.reduce((sum, item) => sum + (item.certificate ? 30 * item.quantity : 0), 0);
 
-      const totalHTML = `
-        <div class="summary-row" style="margin-top:12px;">
-          <strong>Total</strong>
-          <strong>£${total}</strong>
-        </div>
-      `;
+      const itemsTotal = baseItemsTotal + certificateTotal;
+      const delivery = order.delivery.cost;
+      const grandTotal = itemsTotal + delivery;
 
       container.innerHTML = `
         <h2>Order Summary</h2>
         ${itemsHTML}
-        ${deliveryHTML}
-        ${totalHTML}
+        <div class="summary-row"><strong>Delivery</strong><strong>£${delivery.toFixed(2)}</strong></div>
+        <div class="summary-row" style="margin-top:12px;"><strong>Total</strong><strong>£${grandTotal.toFixed(2)}</strong></div>
       `;
     }
 
