@@ -67,14 +67,23 @@
 
   <script>
     // ------------------------------
-    // LOAD ORDER FROM SESSION
+    // SEND CONFIRMATION EMAIL
     // ------------------------------
     const order = JSON.parse(sessionStorage.getItem("pendingOrder"));
 
     if (order) {
+      fetch("/.netlify/functions/send-confirmation", {
+        method: "POST",
+        body: JSON.stringify(order)
+      });
+    }
+
+    // ------------------------------
+    // DISPLAY ORDER SUMMARY
+    // ------------------------------
+    if (order) {
       const container = document.getElementById("orderDetails");
 
-      // Build item rows
       let itemsHTML = order.items.map(item => `
         <div class="summary-row">
           <span>${item.title} × ${item.quantity}</span>
@@ -82,7 +91,6 @@
         </div>
       `).join("");
 
-      // Delivery
       const deliveryHTML = `
         <div class="summary-row">
           <strong>Delivery</strong>
@@ -90,7 +98,6 @@
         </div>
       `;
 
-      // Total
       const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
       const total = (subtotal + order.delivery.cost).toFixed(2);
 
@@ -109,12 +116,11 @@
       `;
     }
 
-    // Clear pending order
+    // ------------------------------
+    // CLEAR ORDER + RESET CART
+    // ------------------------------
     sessionStorage.removeItem("pendingOrder");
 
-    // ------------------------------
-    // RETURN HOME + RESET CART
-    // ------------------------------
     function returnHome() {
       localStorage.setItem("dm_cart", JSON.stringify([]));
       localStorage.setItem("cartCount", "0");
