@@ -708,6 +708,14 @@
 
 /* No special mobile overlay rules – mobile just taps to open vignette */
 
+.gallery-item.touching img {
+  opacity: 0.65 !important;
+}
+
+.gallery-item.touching::after {
+  opacity: 1 !important;
+}
+
     /* CLEAN BLACK ADD TO CART BUTTONS */
     .art-actions button {
       width: 100%;
@@ -1321,9 +1329,14 @@ function renderGallery() {
 
     card.appendChild(meta);
 
-    card.addEventListener("pointerup", () => {
+    card.addEventListener("pointerdown", () => {
+  card.classList.add("touching");
+});
+
+card.addEventListener("pointerup", () => {
   card.classList.remove("touching");
 
+  // ⭐ Delay vignette opening by one frame so overlay can appear
   requestAnimationFrame(() => {
     openVignette(
       item.title,
@@ -1333,6 +1346,10 @@ function renderGallery() {
       item.text || ""
     );
   });
+});
+
+card.addEventListener("pointercancel", () => {
+  card.classList.remove("touching");
 });
 
     grid.appendChild(card);
